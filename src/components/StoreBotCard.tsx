@@ -3,6 +3,7 @@ import { Download, Star } from "lucide-react";
 import type { StoreBot } from "@/lib/types";
 import { cleanBotUsername, formatNumber } from "@/lib/format";
 import { botExplorePath } from "@/lib/repo";
+import { BotPhoto } from "@/components/BotPhoto";
 
 export function StoreBotCard({ bot }: { bot: StoreBot }) {
   const owner = bot.owner_username;
@@ -18,10 +19,10 @@ export function StoreBotCard({ bot }: { bot: StoreBot }) {
     <article className="box flex h-full flex-col">
       <Link href={href} className="flex flex-1 flex-col p-4 hover:bg-row-hover">
         <div className="flex gap-3">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={bot.image || "/bot-fallback.svg"}
-            alt=""
+          <BotPhoto
+            photo={bot.image}
+            username={bot.username}
+            name={bot.name}
             className="h-10 w-10 rounded-md border border-border object-cover"
           />
           <div className="min-w-0 flex-1">

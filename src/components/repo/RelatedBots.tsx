@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { PublishedBotSummary } from "@/lib/types";
 import { botExplorePath } from "@/lib/repo";
 import { cleanBotUsername } from "@/lib/format";
+import { BotPhoto } from "@/components/BotPhoto";
 
 export function RelatedBots({
   bots,
@@ -26,10 +27,10 @@ export function RelatedBots({
                 href={botExplorePath(bot.owner_username || owner, bot.bot_id)}
                 className="flex items-center gap-2 px-3 py-2.5 hover:bg-row-hover"
               >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={bot.photo || "/bot-fallback.svg"}
-                  alt=""
+                <BotPhoto
+                  photo={bot.photo}
+                  username={bot.bot_username}
+                  name={bot.name}
                   className="h-7 w-7 rounded-md border border-border object-cover"
                 />
                 <div className="min-w-0">

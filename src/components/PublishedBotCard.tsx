@@ -3,6 +3,7 @@ import { FileCode2 } from "lucide-react";
 import type { PublishedBotSummary } from "@/lib/types";
 import { cleanBotUsername, timeAgo } from "@/lib/format";
 import { botExplorePath } from "@/lib/repo";
+import { BotPhoto } from "@/components/BotPhoto";
 
 export function PublishedBotCard({
   bot,
@@ -19,10 +20,10 @@ export function PublishedBotCard({
       href={botExplorePath(owner, bot.bot_id)}
       className="flex items-start gap-3 border-b border-border px-4 py-4 last:border-b-0 hover:bg-row-hover"
     >
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        src={bot.photo || "/bot-fallback.svg"}
-        alt=""
+      <BotPhoto
+        photo={bot.photo}
+        username={bot.bot_username}
+        name={bot.name}
         className="mt-0.5 h-8 w-8 rounded-md border border-border object-cover"
       />
       <div className="min-w-0 flex-1">

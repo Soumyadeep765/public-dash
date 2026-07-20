@@ -4,6 +4,7 @@ import type { PublishedBotDetail } from "@/lib/types";
 import { formatDate, timeAgo } from "@/lib/format";
 import { botExplorePath } from "@/lib/repo";
 import { ForkBotButton } from "@/components/repo/ForkBotButton";
+import { BotPhoto } from "@/components/BotPhoto";
 
 export function BotRepoHeader({
   bot,
@@ -22,10 +23,10 @@ export function BotRepoHeader({
     <div className="space-y-3 border-b border-border pb-4">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div className="flex min-w-0 items-start gap-3">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={bot.photo || "/bot-fallback.svg"}
-            alt=""
+          <BotPhoto
+            photo={bot.photo}
+            username={bot.bot_username}
+            name={bot.name}
             className="h-8 w-8 rounded-md border border-border object-cover"
           />
           <div className="min-w-0">

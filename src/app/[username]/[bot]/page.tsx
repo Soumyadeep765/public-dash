@@ -5,6 +5,7 @@ import { FileCode2 } from "lucide-react";
 import { botExplorePath, resolveRepoSlug } from "@/lib/repo";
 import { timeAgo } from "@/lib/format";
 import { absoluteUrl } from "@/lib/site";
+import { BotPhoto } from "@/components/BotPhoto";
 
 type Params = Promise<{ username: string; bot: string }>;
 
@@ -73,10 +74,10 @@ export default async function BotSlugResolvePage({ params }: { params: Params })
             href={botExplorePath(item.owner_username || owner, item.bot_id)}
             className="flex items-start gap-3 border-b border-border px-4 py-4 last:border-b-0 hover:bg-row-hover"
           >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={item.photo || "/bot-fallback.svg"}
-              alt=""
+            <BotPhoto
+              photo={item.photo}
+              username={item.bot_username}
+              name={item.name}
               className="mt-0.5 h-8 w-8 rounded-md border border-border object-cover"
             />
             <div className="min-w-0 flex-1">

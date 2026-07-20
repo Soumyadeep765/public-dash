@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useSessionAccount } from "@/components/SessionProvider";
 import { getConsoleDashboardUrl } from "@/lib/session";
+import { BotPhoto } from "@/components/BotPhoto";
 
 type BotSummary = {
   bot_id: number;
@@ -83,10 +84,10 @@ export function HomeSignedInBanner() {
               href={`/${account.username}/b/${bot.bot_id}`}
               className="flex items-center gap-3 px-4 py-3 hover:bg-row-hover"
             >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={bot.photo || "/bot-fallback.svg"}
-                alt=""
+              <BotPhoto
+                photo={bot.photo}
+                username={bot.bot_username}
+                name={bot.name}
                 className="h-8 w-8 rounded-md border border-border object-cover"
               />
               <div className="min-w-0">

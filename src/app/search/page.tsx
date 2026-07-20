@@ -1,9 +1,10 @@
 import Link from "next/link";
 import type { Metadata } from "next";
-import { Bot, User } from "lucide-react";
+import { User } from "lucide-react";
 import { searchPublic } from "@/lib/api";
 import { pageMetadata } from "@/lib/seo";
 import { botExplorePath } from "@/lib/repo";
+import { BotPhoto } from "@/components/BotPhoto";
 
 type SearchParams = Promise<{ q?: string; type?: string }>;
 
@@ -132,18 +133,12 @@ export default async function SearchPage({ searchParams }: { searchParams: Searc
                         href={botExplorePath(owner, bot.bot_id)}
                         className="flex items-center gap-3 border-b border-border px-4 py-3 last:border-b-0 hover:bg-row-hover"
                       >
-                        {bot.photo ? (
-                          // eslint-disable-next-line @next/next/no-img-element
-                          <img
-                            src={bot.photo}
-                            alt=""
-                            className="h-9 w-9 rounded-md border border-border object-cover"
-                          />
-                        ) : (
-                          <div className="grid h-9 w-9 place-items-center rounded-md border border-border bg-canvas-subtle">
-                            <Bot size={14} className="text-muted" />
-                          </div>
-                        )}
+                        <BotPhoto
+                          photo={bot.photo}
+                          username={bot.bot_username}
+                          name={bot.name}
+                          className="h-9 w-9 rounded-md border border-border object-cover"
+                        />
                         <div className="min-w-0">
                           <p className="truncate font-semibold text-accent">{bot.name}</p>
                           <p className="truncate text-sm text-muted">
