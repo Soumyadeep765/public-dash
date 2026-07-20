@@ -1,10 +1,12 @@
 export const CURRENT_ACCOUNT_COOKIE =
   process.env.NEXT_PUBLIC_TBH_ACCOUNT_COOKIE || "tbh_current_account";
 
+const SAVED_ACCOUNTS_COOKIE = "tbh_saved_accounts";
 const HANDOFF_FLAG = "tbh_console_handoff_v1";
 const ACCOUNT_COOKIE_MAX_AGE = 60 * 60 * 24 * 30;
 
 export type CurrentAccount = {
+  id?: string | null;
   username: string;
   name: string;
   avatar: string;
@@ -12,6 +14,28 @@ export type CurrentAccount = {
   email: string | null;
   updatedAt?: number;
 };
+
+export type SessionSnapshot = {
+  account: CurrentAccount | null;
+  accounts: CurrentAccount[];
+};
+
+function normalizeAccount(data: Partial<CurrentAccount> | null | undefined): CurrentAccount | null {
+  if (!data || typeof data !== "object") return null;
+  const username = String(data.username || "")
+    .trim()
+    .replace(/^@/, "");
+  if (!username) return null;
+  return {
+    id: data.id ? String(data.id) : null,
+    username,
+    name: String(data.name || "").trim(),
+    avatar: String(data.avatar || "").trim(),
+    userId: data.userId ? String(data.userId) : null,
+    email: data.email ? String(data.email).trim().toLowerCase() : null,
+    updatedAt: typeof data.updatedAt === "number" ? data.updatedAt : undefined,
+  };
+}
 
 export function parseCurrentAccountCookie(raw: string | undefined | null): CurrentAccount | null {
   if (!raw) return null;
@@ -22,22 +46,70 @@ export function parseCurrentAccountCookie(raw: string | undefined | null): Curre
     } catch {
       text = raw;
     }
-    const data = JSON.parse(text) as Partial<CurrentAccount>;
-    const username = String(data.username || "")
-      .trim()
-      .replace(/^@/, "");
-    if (!username) return null;
-    return {
-      username,
-      name: String(data.name || "").trim(),
-      avatar: String(data.avatar || "").trim(),
-      userId: data.userId ? String(data.userId) : null,
-      email: data.email ? String(data.email).trim().toLowerCase() : null,
-      updatedAt: typeof data.updatedAt === "number" ? data.updatedAt : undefined,
+    const data = JSON.parse(text) as Partial<CurrentAccount> & {
+      account?: Partial<CurrentAccount>;
+      accounts?: Partial<CurrentAccount>[];
     };
+    // Support legacy single-account and newer { account, accounts } payloads
+    if (data.account || Array.isArray(data.accounts)) {
+      return normalizeAccount(data.account || data.accounts?.[0] || null);
+    }
+    return normalizeAccount(data);
   } catch {
     return null;
   }
+}
+
+function parseAccountsList(raw: string | undefined | null): CurrentAccount[] {
+  if (!raw) return [];
+  try {
+    let text = raw;
+    try {
+      text = decodeURIComponent(raw);
+    } catch {
+      text = raw;
+    }
+    const data = JSON.parse(text) as unknown;
+    if (!Array.isArray(data)) return [];
+    return data.map((item) => normalizeAccount(item as Partial<CurrentAccount>)).filter(Boolean) as CurrentAccount[];
+  } catch {
+    return [];
+  }
+}
+
+function parseHandoffPayload(raw: string): SessionSnapshot {
+  if (!raw) return { account: null, accounts: [] };
+  try {
+    const data = JSON.parse(decodeURIComponent(raw)) as {
+      account?: Partial<CurrentAccount> | null;
+      accounts?: Partial<CurrentAccount>[];
+      username?: string;
+    };
+    if (data && (data.account !== undefined || Array.isArray(data.accounts))) {
+      const accounts = Array.isArray(data.accounts)
+        ? (data.accounts.map((item) => normalizeAccount(item)).filter(Boolean) as CurrentAccount[])
+        : [];
+      const account = normalizeAccount(data.account) || accounts[0] || null;
+      return { account, accounts: dedupeAccounts(account, accounts) };
+    }
+    const account = normalizeAccount(data as Partial<CurrentAccount>);
+    return { account, accounts: account ? [account] : [] };
+  } catch {
+    return { account: null, accounts: [] };
+  }
+}
+
+function dedupeAccounts(active: CurrentAccount | null, list: CurrentAccount[]): CurrentAccount[] {
+  const map = new Map<string, CurrentAccount>();
+  const keyOf = (a: CurrentAccount) => a.id || a.userId || a.username;
+  if (active) map.set(keyOf(active), active);
+  for (const item of list) {
+    const key = keyOf(item);
+    if (!map.has(key)) map.set(key, item);
+  }
+  const all = [...map.values()];
+  if (!active) return all;
+  return [active, ...all.filter((a) => keyOf(a) !== keyOf(active))];
 }
 
 function readCookieRaw(name: string): string | null {
@@ -50,14 +122,24 @@ function readCookieRaw(name: string): string | null {
   return null;
 }
 
+function writeCookie(name: string, value: string | null, maxAge = ACCOUNT_COOKIE_MAX_AGE): void {
+  if (typeof document === "undefined") return;
+  if (!value) {
+    document.cookie = `${name}=; Path=/; Max-Age=0; SameSite=Lax`;
+    return;
+  }
+  const secure = window.location.protocol === "https:" ? "; Secure" : "";
+  document.cookie = `${name}=${encodeURIComponent(value)}; Path=/; Max-Age=${maxAge}; SameSite=Lax${secure}`;
+}
+
 /** Write first-party account hint cookie on TeleDevs (no JWT). */
 export function writeCurrentAccountCookie(account: CurrentAccount | null): void {
-  if (typeof document === "undefined") return;
   if (!account?.username) {
-    document.cookie = `${CURRENT_ACCOUNT_COOKIE}=; Path=/; Max-Age=0; SameSite=Lax`;
+    writeCookie(CURRENT_ACCOUNT_COOKIE, null);
     return;
   }
   const payload = {
+    id: account.id || null,
     username: account.username,
     name: account.name || "",
     avatar: account.avatar || "",
@@ -65,8 +147,28 @@ export function writeCurrentAccountCookie(account: CurrentAccount | null): void 
     email: account.email,
     updatedAt: account.updatedAt || Date.now(),
   };
-  const secure = window.location.protocol === "https:" ? "; Secure" : "";
-  document.cookie = `${CURRENT_ACCOUNT_COOKIE}=${encodeURIComponent(JSON.stringify(payload))}; Path=/; Max-Age=${ACCOUNT_COOKIE_MAX_AGE}; SameSite=Lax${secure}`;
+  writeCookie(CURRENT_ACCOUNT_COOKIE, JSON.stringify(payload));
+}
+
+export function writeSavedAccountsCookie(accounts: CurrentAccount[]): void {
+  if (!accounts.length) {
+    writeCookie(SAVED_ACCOUNTS_COOKIE, null);
+    return;
+  }
+  const payload = accounts.map((account) => ({
+    id: account.id || null,
+    username: account.username,
+    name: account.name || "",
+    avatar: account.avatar || "",
+    userId: account.userId,
+    email: account.email,
+  }));
+  writeCookie(SAVED_ACCOUNTS_COOKIE, JSON.stringify(payload));
+}
+
+export function writeSessionSnapshot(snapshot: SessionSnapshot): void {
+  writeCurrentAccountCookie(snapshot.account);
+  writeSavedAccountsCookie(snapshot.accounts);
 }
 
 /** Optional signed-in profile hint. Never throws. */
@@ -83,6 +185,12 @@ export async function getCurrentAccount(): Promise<CurrentAccount | null> {
 /** Client-side cookie hint (same host as TeleDevs). */
 export function getCurrentAccountFromDocument(): CurrentAccount | null {
   return parseCurrentAccountCookie(readCookieRaw(CURRENT_ACCOUNT_COOKIE));
+}
+
+export function getSavedAccountsFromDocument(): CurrentAccount[] {
+  const listed = parseAccountsList(readCookieRaw(SAVED_ACCOUNTS_COOKIE));
+  const active = getCurrentAccountFromDocument();
+  return dedupeAccounts(active, listed);
 }
 
 /** Production console. Override with NEXT_PUBLIC_CONSOLE_URL for local dash1. */
@@ -148,36 +256,47 @@ function resetHandoffFlag(): void {
   }
 }
 
-/**
- * Continue with TeleBotHost — top-level console bridge handoff.
- * Uses active console session, or console login if none.
- */
-export function continueWithTelebothost(returnPath = "/"): void {
+function openBridge(returnPath: string, params: Record<string, string> = {}): void {
   if (typeof window === "undefined") return;
   resetHandoffFlag();
   const returnUrl = new URL(returnPath, window.location.origin);
-  // Ensure handoff lands on /login so we can route `next` cleanly, or any return path
   const bridge = new URL(getConsoleBridgeUrl());
   bridge.searchParams.set("return", returnUrl.toString());
+  Object.entries(params).forEach(([key, value]) => {
+    if (value) bridge.searchParams.set(key, value);
+  });
   window.location.href = bridge.toString();
 }
 
 /**
- * Switch TeleBotHost account — clear TeleDevs hint, force console login (add account).
+ * Continue with TeleBotHost — explicit user action.
+ * Bridge uses the active console session when present; only opens login if none.
+ */
+export function continueWithTelebothost(returnPath = "/"): void {
+  openBridge(returnPath, { login: "1" });
+}
+
+/**
+ * Open console saved-account picker (not a blank add form).
  */
 export function switchTelebothostAccount(returnPath = "/"): void {
-  if (typeof window === "undefined") return;
   writeCurrentAccountCookie(null);
-  resetHandoffFlag();
-  const returnUrl = new URL(returnPath, window.location.origin);
-  const bridge = new URL(getConsoleBridgeUrl());
-  bridge.searchParams.set("return", returnUrl.toString());
-  bridge.searchParams.set("switch", "1");
-  window.location.href = bridge.toString();
+  openBridge(returnPath, { switch: "1" });
+}
+
+/** Add a brand-new console account, then return. */
+export function addTelebothostAccount(returnPath = "/"): void {
+  openBridge(returnPath, { add: "1" });
+}
+
+/** Switch to a saved console account by id (no login form). */
+export function activateTelebothostAccount(accountId: string, returnPath = "/"): void {
+  if (!accountId) return;
+  openBridge(returnPath, { activate: accountId });
 }
 
 export function signOutTeledevs(): void {
-  writeCurrentAccountCookie(null);
+  writeSessionSnapshot({ account: null, accounts: [] });
   resetHandoffFlag();
 }
 
@@ -220,9 +339,9 @@ export async function fetchAccountFromApi(): Promise<CurrentAccount | null> {
 
 /**
  * Consume `#tbh-account=...` handoff from console explore-bridge.
- * Returns account (or null if empty handoff). Undefined if no handoff hash.
+ * Returns snapshot. Undefined if no handoff hash.
  */
-export function consumeAccountHandoffFromHash(): CurrentAccount | null | undefined {
+export function consumeAccountHandoffFromHash(): SessionSnapshot | undefined {
   if (typeof window === "undefined") return undefined;
   const hash = window.location.hash || "";
   if (!hash.startsWith("#tbh-account=")) return undefined;
@@ -234,7 +353,6 @@ export function consumeAccountHandoffFromHash(): CurrentAccount | null | undefin
     /* ignore */
   }
 
-  // Clear hash without reload
   try {
     const clean = `${window.location.pathname}${window.location.search}`;
     window.history.replaceState(null, "", clean);
@@ -242,28 +360,19 @@ export function consumeAccountHandoffFromHash(): CurrentAccount | null | undefin
     /* ignore */
   }
 
-  if (!raw) {
-    writeCurrentAccountCookie(null);
-    return null;
-  }
-
-  try {
-    const parsed = parseCurrentAccountCookie(decodeURIComponent(raw));
-    if (parsed) writeCurrentAccountCookie(parsed);
-    else writeCurrentAccountCookie(null);
-    return parsed;
-  } catch {
-    writeCurrentAccountCookie(null);
-    return null;
-  }
+  const snapshot = parseHandoffPayload(raw);
+  writeSessionSnapshot(snapshot);
+  return snapshot;
 }
 
 /**
- * Ask the console bridge iframe for the active account.
- * Often blocked by third-party storage partitioning — prefer top-level handoff.
+ * Ask the console bridge iframe for the active account + saved list.
+ * Often blocked by storage partitioning — optional enhancement only.
  */
-export function fetchAccountFromConsoleBridge(timeoutMs = 2000): Promise<CurrentAccount | null> {
-  if (typeof window === "undefined") return Promise.resolve(null);
+export function fetchSessionFromConsoleBridge(timeoutMs = 1800): Promise<SessionSnapshot> {
+  if (typeof window === "undefined") {
+    return Promise.resolve({ account: null, accounts: [] });
+  }
 
   return new Promise((resolve) => {
     const bridgeUrl = getConsoleBridgeUrl();
@@ -275,13 +384,13 @@ export function fetchAccountFromConsoleBridge(timeoutMs = 2000): Promise<Current
     iframe.style.cssText =
       "position:absolute;width:0;height:0;border:0;clip:rect(0,0,0,0);opacity:0;pointer-events:none";
 
-    const finish = (account: CurrentAccount | null) => {
+    const finish = (snapshot: SessionSnapshot) => {
       if (settled) return;
       settled = true;
       window.removeEventListener("message", onMessage);
       window.clearTimeout(timer);
       iframe.remove();
-      resolve(account);
+      resolve(snapshot);
     };
 
     const onMessage = (event: MessageEvent) => {
@@ -295,29 +404,23 @@ export function fetchAccountFromConsoleBridge(timeoutMs = 2000): Promise<Current
       if (!data || data.source !== "telebothost-console" || data.type !== "tbh-account") {
         return;
       }
-      const account = data.account as CurrentAccount | null;
-      if (account?.username) {
-        finish({
-          username: String(account.username).replace(/^@/, ""),
-          name: String(account.name || "").trim(),
-          avatar: String(account.avatar || "").trim(),
-          userId: account.userId ? String(account.userId) : null,
-          email: account.email ? String(account.email).trim().toLowerCase() : null,
-          updatedAt: account.updatedAt || Date.now(),
-        });
-      } else {
-        finish(null);
-      }
+      const account = normalizeAccount(data.account as Partial<CurrentAccount> | null);
+      const accounts = Array.isArray(data.accounts)
+        ? (data.accounts.map((item: Partial<CurrentAccount>) => normalizeAccount(item)).filter(Boolean) as CurrentAccount[])
+        : account
+          ? [account]
+          : [];
+      finish({ account, accounts: dedupeAccounts(account, accounts) });
     };
 
     window.addEventListener("message", onMessage);
-    const timer = window.setTimeout(() => finish(null), timeoutMs);
+    const timer = window.setTimeout(() => finish({ account: null, accounts: [] }), timeoutMs);
 
     iframe.addEventListener("load", () => {
       try {
         iframe.contentWindow?.postMessage(
           { type: "tbh-account-request", source: "telebothost-explore" },
-          new URL(bridgeUrl).origin
+          new URL(bridgeUrl).origin,
         );
       } catch {
         /* ignore */
@@ -328,60 +431,44 @@ export function fetchAccountFromConsoleBridge(timeoutMs = 2000): Promise<Current
   });
 }
 
-/** One top-level bounce through console so first-party localStorage is readable. */
-export function startConsoleSessionHandoff(): boolean {
-  if (typeof window === "undefined") return false;
-  try {
-    const prev = sessionStorage.getItem(HANDOFF_FLAG);
-    // "1" = completed empty/success handoff this tab; timestamp = in-flight / allow retry after 45s
-    if (prev === "1") return false;
-    if (prev && /^\d+$/.test(prev) && Date.now() - Number(prev) < 45_000) return false;
-    sessionStorage.setItem(HANDOFF_FLAG, String(Date.now()));
-  } catch {
-    return false;
-  }
-
-  const returnUrl = `${window.location.origin}${window.location.pathname}${window.location.search}`;
-  const bridge = new URL(getConsoleBridgeUrl());
-  bridge.searchParams.set("return", returnUrl);
-  window.location.replace(bridge.toString());
-  return true;
+/** @deprecated use fetchSessionFromConsoleBridge */
+export function fetchAccountFromConsoleBridge(timeoutMs = 1800): Promise<CurrentAccount | null> {
+  return fetchSessionFromConsoleBridge(timeoutMs).then((s) => s.account);
 }
 
 /**
- * Resolve signed-in account:
- * handoff hash → TeleDevs cookie → API cookie → iframe bridge → top-level handoff.
+ * Resolve signed-in account optionally.
+ * Never forces console login. If console session is readable, load it; else stay signed out.
  */
-export async function resolveCurrentAccount(): Promise<CurrentAccount | null> {
+export async function resolveSession(): Promise<SessionSnapshot> {
   const fromHandoff = consumeAccountHandoffFromHash();
   if (fromHandoff !== undefined) return fromHandoff;
 
-  const fromCookie = getCurrentAccountFromDocument();
-  if (fromCookie) return fromCookie;
+  const cookieAccount = getCurrentAccountFromDocument();
+  const cookieAccounts = getSavedAccountsFromDocument();
+  if (cookieAccount) {
+    return { account: cookieAccount, accounts: dedupeAccounts(cookieAccount, cookieAccounts) };
+  }
 
   const fromApi = await fetchAccountFromApi();
   if (fromApi) {
-    writeCurrentAccountCookie(fromApi);
-    return fromApi;
+    const snapshot = { account: fromApi, accounts: dedupeAccounts(fromApi, cookieAccounts) };
+    writeSessionSnapshot(snapshot);
+    return snapshot;
   }
 
-  const fromBridge = await fetchAccountFromConsoleBridge();
-  if (fromBridge) {
-    writeCurrentAccountCookie(fromBridge);
+  // Best-effort iframe probe only — never top-level bounce / never force login
+  const fromBridge = await fetchSessionFromConsoleBridge();
+  if (fromBridge.account) {
+    writeSessionSnapshot(fromBridge);
     return fromBridge;
   }
 
-  // Don't auto-bounce on the login screen — user chooses Continue / Switch there.
-  try {
-    if (window.location.pathname === "/login") return null;
-  } catch {
-    /* ignore */
-  }
+  return { account: null, accounts: cookieAccounts };
+}
 
-  // Cross-site iframe storage is partitioned — bounce once via top-level console.
-  if (startConsoleSessionHandoff()) {
-    return null;
-  }
-
-  return null;
+/** @deprecated use resolveSession */
+export async function resolveCurrentAccount(): Promise<CurrentAccount | null> {
+  const snapshot = await resolveSession();
+  return snapshot.account;
 }

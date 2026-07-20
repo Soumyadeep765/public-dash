@@ -8,25 +8,37 @@ import {
   type ReactNode,
 } from "react";
 import {
-  resolveCurrentAccount,
+  resolveSession,
   type CurrentAccount,
+  type SessionSnapshot,
 } from "@/lib/session";
 
-const SessionContext = createContext<CurrentAccount | null>(null);
+type SessionContextValue = {
+  account: CurrentAccount | null;
+  accounts: CurrentAccount[];
+  ready: boolean;
+};
+
+const SessionContext = createContext<SessionContextValue>({
+  account: null,
+  accounts: [],
+  ready: false,
+});
 
 export function SessionProvider({ children }: { children: ReactNode }) {
-  const [account, setAccount] = useState<CurrentAccount | null>(null);
+  const [snapshot, setSnapshot] = useState<SessionSnapshot>({
+    account: null,
+    accounts: [],
+  });
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
 
     async function load() {
-      const next = await resolveCurrentAccount();
+      const next = await resolveSession();
       if (cancelled) return;
-      // If handoff redirect started, this page is unloading — keep unsigned UI
-      // until we return with #tbh-account=...
-      setAccount(next);
+      setSnapshot(next);
       setReady(true);
     }
 
@@ -48,7 +60,9 @@ export function SessionProvider({ children }: { children: ReactNode }) {
   }, []);
 
   return (
-    <SessionContext.Provider value={account}>
+    <SessionContext.Provider
+      value={{ account: snapshot.account, accounts: snapshot.accounts, ready }}
+    >
       <div data-session-ready={ready ? "1" : "0"} className="contents">
         {children}
       </div>
@@ -57,5 +71,13 @@ export function SessionProvider({ children }: { children: ReactNode }) {
 }
 
 export function useSessionAccount(): CurrentAccount | null {
-  return useContext(SessionContext);
+  return useContext(SessionContext).account;
+}
+
+export function useSessionAccounts(): CurrentAccount[] {
+  return useContext(SessionContext).accounts;
+}
+
+export function useSessionReady(): boolean {
+  return useContext(SessionContext).ready;
 }

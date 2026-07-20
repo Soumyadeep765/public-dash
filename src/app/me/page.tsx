@@ -1,28 +1,25 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { useSessionAccount } from "@/components/SessionProvider";
-import { getConsoleLoginUrl } from "@/lib/session";
+import { useSessionAccount, useSessionReady } from "@/components/SessionProvider";
+import { getTeledevsLoginPath } from "@/lib/session";
 
 /** Optional shortcut to your public profile when signed in. */
 export default function MePage() {
   const router = useRouter();
   const account = useSessionAccount();
-  const [waited, setWaited] = useState(false);
+  const ready = useSessionReady();
 
   useEffect(() => {
-    const timer = window.setTimeout(() => setWaited(true), 2500);
-    return () => window.clearTimeout(timer);
-  }, []);
-
-  useEffect(() => {
+    if (!ready) return;
     if (account?.username) {
       router.replace(`/${account.username}`);
       return;
     }
-    if (waited) router.replace("/");
-  }, [account, waited, router]);
+    // Signed out is fine — offer optional login, don't force console
+    router.replace("/");
+  }, [account, ready, router]);
 
   return (
     <div className="shell py-16 text-center text-sm text-muted">
@@ -32,7 +29,7 @@ export default function MePage() {
           Home
         </a>
         {" · "}
-        <a href={getConsoleLoginUrl("/")} className="link">
+        <a href={getTeledevsLoginPath("/me")} className="link">
           Sign in
         </a>
       </p>

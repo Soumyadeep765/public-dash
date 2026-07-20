@@ -2,18 +2,18 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
-import { ArrowRight, LogIn, RefreshCw } from "lucide-react";
+import { useEffect, useState } from "react";
+import { ArrowRight, LogIn, Plus, RefreshCw } from "lucide-react";
 import { TbhLogo } from "@/components/TbhLogo";
-import { useSessionAccount } from "@/components/SessionProvider";
+import { useSessionAccount, useSessionAccounts } from "@/components/SessionProvider";
 import { initials } from "@/lib/format";
 import {
+  activateTelebothostAccount,
+  addTelebothostAccount,
   continueWithTelebothost,
   getConsoleSignupUrl,
-  signOutTeledevs,
   switchTelebothostAccount,
-  consumeAccountHandoffFromHash,
-  writeCurrentAccountCookie,
+  type CurrentAccount,
 } from "@/lib/session";
 
 export function LoginClient({
@@ -25,77 +25,74 @@ export function LoginClient({
 }) {
   const router = useRouter();
   const account = useSessionAccount();
-  const [busy, setBusy] = useState<"continue" | "switch" | null>(null);
-  const switchStarted = useRef(false);
+  const accounts = useSessionAccounts();
+  const [busy, setBusy] = useState<"continue" | "switch" | "add" | string | null>(null);
 
-  // Menu "Switch account" → /login?switch=1 starts console account picker immediately
+  // After console handoff, leave /login for the intended destination
   useEffect(() => {
-    if (!isSwitch || switchStarted.current) return;
-    switchStarted.current = true;
-    setBusy("switch");
-    signOutTeledevs();
-    try {
-      sessionStorage.setItem("tbh_login_pending_next", nextPath || "/");
-    } catch {
-      /* ignore */
-    }
-    switchTelebothostAccount(`/login?next=${encodeURIComponent(nextPath || "/")}`);
-  }, [isSwitch, nextPath]);
-
-  // After Continue/Switch handoff, SessionProvider applies the account — then leave /login
-  useEffect(() => {
-    if (isSwitch) return;
+    if (!account?.username) return;
     try {
       const pending = sessionStorage.getItem("tbh_login_pending_next");
-      if (pending && account?.username) {
+      if (pending) {
         sessionStorage.removeItem("tbh_login_pending_next");
         router.replace(pending);
       }
     } catch {
       /* ignore */
     }
-  }, [account, router, isSwitch]);
+  }, [account, router]);
 
-  // If hash handoff lands here before provider finishes, consume it too
-  useEffect(() => {
-    const handed = consumeAccountHandoffFromHash();
-    if (handed?.username) {
-      writeCurrentAccountCookie(handed);
-      try {
-        sessionStorage.setItem("tbh_login_pending_next", nextPath || "/");
-      } catch {
-        /* ignore */
-      }
-      router.replace(nextPath || "/");
-    }
-  }, [nextPath, router]);
-
-  function onContinue() {
-    setBusy("continue");
+  function rememberNext() {
     try {
       sessionStorage.setItem("tbh_login_pending_next", nextPath || "/");
     } catch {
       /* ignore */
     }
+  }
+
+  function onContinue() {
+    setBusy("continue");
+    rememberNext();
     const returnTo = `/login?next=${encodeURIComponent(nextPath || "/")}`;
     continueWithTelebothost(returnTo);
   }
 
   function onSwitch() {
     setBusy("switch");
-    signOutTeledevs();
-    try {
-      sessionStorage.setItem("tbh_login_pending_next", nextPath || "/");
-    } catch {
-      /* ignore */
-    }
+    rememberNext();
     const returnTo = `/login?next=${encodeURIComponent(nextPath || "/")}`;
     switchTelebothostAccount(returnTo);
+  }
+
+  function onAdd() {
+    setBusy("add");
+    rememberNext();
+    const returnTo = `/login?next=${encodeURIComponent(nextPath || "/")}`;
+    addTelebothostAccount(returnTo);
   }
 
   function onUseCurrent() {
     router.push(nextPath || "/");
   }
+
+  function onActivate(item: CurrentAccount) {
+    const id = item.id;
+    setBusy(id || item.username);
+    rememberNext();
+    const returnTo = `/login?next=${encodeURIComponent(nextPath || "/")}`;
+    if (id) {
+      activateTelebothostAccount(id, returnTo);
+      return;
+    }
+    switchTelebothostAccount(returnTo);
+  }
+
+  const others = accounts.filter((item) => {
+    if (!account) return true;
+    if (account.id && item.id) return item.id !== account.id;
+    if (account.userId && item.userId) return item.userId !== account.userId;
+    return item.username !== account.username;
+  });
 
   return (
     <div className="shell flex min-h-[70vh] items-center justify-center py-10">
@@ -108,12 +105,12 @@ export function LoginClient({
             {isSwitch ? "Switch account" : "Sign in to TeleDevs"}
           </h1>
           <p className="mt-1.5 text-sm text-muted">
-            Use your TeleBotHost console account. Same login — no separate password here.
+            Optional. Browse freely, or connect your TeleBotHost console account when you want.
           </p>
         </div>
 
         <div className="space-y-4 px-5 py-5">
-          {account?.username && !isSwitch ? (
+          {account?.username ? (
             <div className="rounded-md border border-border bg-canvas-subtle/50 p-3">
               <p className="text-xs font-medium uppercase tracking-wide text-muted">
                 Signed in on TeleDevs
@@ -147,17 +144,53 @@ export function LoginClient({
                 <ArrowRight size={14} />
               </button>
             </div>
-          ) : null}
+          ) : (
+            <button
+              type="button"
+              className="btn btn-primary w-full justify-center !py-2.5"
+              disabled={busy !== null}
+              onClick={onContinue}
+            >
+              <LogIn size={16} />
+              {busy === "continue" ? "Opening TeleBotHost…" : "Continue with TeleBotHost"}
+            </button>
+          )}
 
-          <button
-            type="button"
-            className="btn btn-primary w-full justify-center !py-2.5"
-            disabled={busy !== null}
-            onClick={onContinue}
-          >
-            <LogIn size={16} />
-            {busy === "continue" ? "Opening TeleBotHost…" : "Continue with TeleBotHost"}
-          </button>
+          {others.length ? (
+            <div className="space-y-2">
+              <p className="text-xs font-semibold uppercase tracking-wide text-muted">
+                Switch account
+              </p>
+              {others.map((item) => (
+                <button
+                  key={item.id || item.userId || item.username}
+                  type="button"
+                  className="btn w-full !justify-start gap-3"
+                  disabled={busy !== null}
+                  onClick={() => onActivate(item)}
+                >
+                  {item.avatar ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={item.avatar}
+                      alt=""
+                      className="h-8 w-8 rounded-full border border-border object-cover"
+                    />
+                  ) : (
+                    <span className="grid h-8 w-8 place-items-center rounded-full border border-border bg-canvas-subtle text-xs font-semibold">
+                      {initials(item.name || item.username)}
+                    </span>
+                  )}
+                  <span className="min-w-0 text-left">
+                    <span className="block truncate text-sm font-medium">@{item.username}</span>
+                    {item.name ? (
+                      <span className="block truncate text-xs text-muted">{item.name}</span>
+                    ) : null}
+                  </span>
+                </button>
+              ))}
+            </div>
+          ) : null}
 
           <button
             type="button"
@@ -166,11 +199,25 @@ export function LoginClient({
             onClick={onSwitch}
           >
             <RefreshCw size={16} />
-            {busy === "switch" ? "Opening account switch…" : "Use a different account"}
+            {busy === "switch"
+              ? "Opening account picker…"
+              : others.length
+                ? "More accounts on console"
+                : "Choose account on console"}
+          </button>
+
+          <button
+            type="button"
+            className="btn w-full justify-center"
+            disabled={busy !== null}
+            onClick={onAdd}
+          >
+            <Plus size={16} />
+            {busy === "add" ? "Opening console…" : "Add a different account"}
           </button>
 
           <p className="text-center text-xs text-muted">
-            You&apos;ll open the TeleBotHost console to confirm, then return here.
+            TeleDevs works signed out. Connect a console account only when you want.
           </p>
         </div>
 

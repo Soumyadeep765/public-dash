@@ -52,7 +52,6 @@ export function Header() {
           <UserNav
             account={account}
             loginUrl={getTeledevsLoginPath()}
-            switchUrl={getTeledevsLoginPath("/", { switch: true })}
             signupUrl={getConsoleSignupUrl()}
             consoleUrl={getConsoleDashboardUrl()}
           />

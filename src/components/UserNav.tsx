@@ -6,28 +6,60 @@ import {
   ChevronDown,
   ExternalLink,
   LayoutDashboard,
-  LogIn,
   LogOut,
+  Plus,
   RefreshCw,
   User,
 } from "lucide-react";
 import type { CurrentAccount } from "@/lib/session";
 import { initials } from "@/lib/format";
-import { signOutTeledevs } from "@/lib/session";
+import {
+  activateTelebothostAccount,
+  addTelebothostAccount,
+  signOutTeledevs,
+  switchTelebothostAccount,
+} from "@/lib/session";
+import { useSessionAccounts } from "@/components/SessionProvider";
+
+function AccountAvatar({
+  account,
+  className = "h-5 w-5",
+}: {
+  account: CurrentAccount;
+  className?: string;
+}) {
+  const label = account.name || account.username;
+  if (account.avatar) {
+    return (
+      // eslint-disable-next-line @next/next/no-img-element
+      <img
+        src={account.avatar}
+        alt=""
+        className={`${className} rounded-full border border-border object-cover`}
+      />
+    );
+  }
+  return (
+    <span
+      className={`${className} grid place-items-center rounded-full bg-canvas-subtle text-[10px] font-semibold`}
+    >
+      {initials(label)}
+    </span>
+  );
+}
 
 export function UserNav({
   account,
   loginUrl,
-  switchUrl,
   signupUrl,
   consoleUrl,
 }: {
   account: CurrentAccount | null;
   loginUrl: string;
-  switchUrl: string;
   signupUrl: string;
   consoleUrl: string;
 }) {
+  const accounts = useSessionAccounts();
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
@@ -52,12 +84,36 @@ export function UserNav({
     );
   }
 
-  const label = account.name || account.username;
-  const avatarFallback = initials(label);
+  const others = accounts.filter((item) => {
+    if (account.id && item.id) return item.id !== account.id;
+    if (account.userId && item.userId) return item.userId !== account.userId;
+    return item.username !== account.username;
+  });
 
   function onSignOut() {
     signOutTeledevs();
     window.location.href = "/";
+  }
+
+  function onActivate(item: CurrentAccount) {
+    setOpen(false);
+    const id = item.id;
+    if (id) {
+      activateTelebothostAccount(id, window.location.pathname + window.location.search);
+      return;
+    }
+    // No id available — open console picker
+    switchTelebothostAccount(window.location.pathname + window.location.search);
+  }
+
+  function onPickOther() {
+    setOpen(false);
+    switchTelebothostAccount(window.location.pathname + window.location.search);
+  }
+
+  function onAddAccount() {
+    setOpen(false);
+    addTelebothostAccount(window.location.pathname + window.location.search);
   }
 
   return (
@@ -69,18 +125,7 @@ export function UserNav({
         aria-expanded={open}
         aria-haspopup="menu"
       >
-        {account.avatar ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={account.avatar}
-            alt=""
-            className="h-5 w-5 rounded-full border border-border object-cover"
-          />
-        ) : (
-          <span className="grid h-5 w-5 place-items-center rounded-full bg-canvas-subtle text-[10px] font-semibold">
-            {avatarFallback}
-          </span>
-        )}
+        <AccountAvatar account={account} />
         <span className="hidden max-w-[120px] truncate sm:inline">{account.username}</span>
         <ChevronDown size={14} className="text-muted" />
       </button>
@@ -88,7 +133,7 @@ export function UserNav({
       {open ? (
         <div
           role="menu"
-          className="absolute right-0 z-50 mt-1 w-64 overflow-hidden rounded-md border border-border bg-canvas shadow-sm"
+          className="absolute right-0 z-50 mt-1 w-72 overflow-hidden rounded-md border border-border bg-canvas shadow-sm"
         >
           <div className="border-b border-border px-3 py-2">
             <p className="text-xs text-muted">Signed in as</p>
@@ -123,22 +168,47 @@ export function UserNav({
               <ExternalLink size={14} />
               Open console
             </a>
-            <Link
-              href={switchUrl}
-              className="flex items-center gap-2 border-t border-border px-3 py-2 hover:bg-row-hover"
-              onClick={() => setOpen(false)}
+
+            {others.length ? (
+              <div className="border-t border-border pt-1">
+                <p className="px-3 py-1.5 text-[11px] font-semibold uppercase tracking-wide text-muted">
+                  Switch account
+                </p>
+                {others.map((item) => (
+                  <button
+                    key={item.id || item.userId || item.username}
+                    type="button"
+                    className="flex w-full items-center gap-2 px-3 py-2 text-left hover:bg-row-hover"
+                    onClick={() => onActivate(item)}
+                  >
+                    <AccountAvatar account={item} />
+                    <span className="min-w-0">
+                      <span className="block truncate text-sm font-medium">@{item.username}</span>
+                      {item.name ? (
+                        <span className="block truncate text-xs text-muted">{item.name}</span>
+                      ) : null}
+                    </span>
+                  </button>
+                ))}
+              </div>
+            ) : null}
+
+            <button
+              type="button"
+              className="flex w-full items-center gap-2 border-t border-border px-3 py-2 text-left hover:bg-row-hover"
+              onClick={onPickOther}
             >
               <RefreshCw size={14} />
-              Switch account
-            </Link>
-            <Link
-              href={loginUrl}
-              className="flex items-center gap-2 px-3 py-2 hover:bg-row-hover"
-              onClick={() => setOpen(false)}
+              {others.length ? "More on console" : "Switch account"}
+            </button>
+            <button
+              type="button"
+              className="flex w-full items-center gap-2 px-3 py-2 text-left hover:bg-row-hover"
+              onClick={onAddAccount}
             >
-              <LogIn size={14} />
-              Sign in again
-            </Link>
+              <Plus size={14} />
+              Add another account
+            </button>
             <button
               type="button"
               className="flex w-full items-center gap-2 px-3 py-2 text-left hover:bg-row-hover"
