@@ -4,16 +4,27 @@ import remarkGfm from "remark-gfm";
 import rehypeRaw from "rehype-raw";
 import rehypeSanitize from "rehype-sanitize";
 import { highlightCode } from "@/lib/highlight";
-import { isBadgeImage, markdownSanitizeSchema, rehypeBadgeRows } from "@/lib/markdown";
+import {
+  isBadgeImage,
+  isSafeUserContentUrl,
+  markdownSanitizeSchema,
+  rehypeBadgeRows,
+} from "@/lib/markdown";
 
 const components: Components = {
   a({ href, children, ...props }) {
-    const external = Boolean(href && /^https?:\/\//i.test(href));
+    const safe = isSafeUserContentUrl(href);
+    if (!safe) {
+      return <span {...props}>{children}</span>;
+    }
+    const external = Boolean(href && /^(https?:|mailto:|tg:)/i.test(href));
     return (
       <a
         href={href}
         {...props}
-        {...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+        {...(external
+          ? { target: "_blank", rel: "nofollow ugc noopener noreferrer" }
+          : {})}
       >
         {children}
       </a>
@@ -22,6 +33,9 @@ const components: Components = {
   img({ src, alt, ...props }) {
     const url = typeof src === "string" ? src : "";
     const label = typeof alt === "string" ? alt : "";
+    if (!isSafeUserContentUrl(url)) {
+      return label ? <span className="text-muted">{label}</span> : null;
+    }
     const badge = isBadgeImage(url, label);
     return (
       // eslint-disable-next-line @next/next/no-img-element
@@ -29,6 +43,7 @@ const components: Components = {
         src={url}
         alt={label}
         loading="lazy"
+        referrerPolicy="no-referrer"
         className={badge ? "md-badge" : "md-image"}
         {...props}
       />

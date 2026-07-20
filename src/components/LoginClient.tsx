@@ -106,7 +106,8 @@ export function LoginClient({
             {isSwitch ? "Switch account" : "Sign in to TeleDevs"}
           </h1>
           <p className="mt-1.5 text-sm text-muted">
-            Optional. Browse freely, or connect your TeleBotHost console account when you want.
+            Optional. TeleDevs never asks for your password here — sign-in happens on the official
+            TeleBotHost console.
           </p>
         </div>
 

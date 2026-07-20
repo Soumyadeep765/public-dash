@@ -161,7 +161,25 @@ export const markdownSanitizeSchema = {
   },
   protocols: {
     ...defaultSchema.protocols,
-    src: [...(defaultSchema.protocols?.src || []), "https", "http", "data"],
-    href: [...(defaultSchema.protocols?.href || []), "https", "http", "mailto"],
+    // No data: URIs — can embed deceptive phishing-like images/UI in user READMEs
+    src: ["https", "http"],
+    href: ["https", "http", "mailto", "tg"],
   },
 };
+
+/** Block schemes Safe Browsing often associates with deceptive / phishing pages. */
+export function isSafeUserContentUrl(href?: string | null): boolean {
+  const raw = String(href || "").trim();
+  if (!raw) return false;
+  if (raw.startsWith("/") && !raw.startsWith("//")) return true;
+  if (raw.startsWith("#") || raw.startsWith("mailto:") || raw.startsWith("tg:")) return true;
+  try {
+    const parsed = new URL(raw, "https://teledevs.me");
+    const protocol = parsed.protocol.toLowerCase();
+    if (protocol === "https:" || protocol === "http:") return true;
+    if (protocol === "mailto:" || protocol === "tg:") return true;
+    return false;
+  } catch {
+    return false;
+  }
+}
