@@ -1,6 +1,6 @@
-# TeleBotHost Explore
+# TeleDevs
 
-Public showcase for [TeleBotHost](https://telebothost.com) developers and bots.
+Public showcase for [TeleBotHost](https://telebothost.com) developers and bots — live at [teledevs.me](https://teledevs.me).
 
 ## Features
 
@@ -12,7 +12,7 @@ Public showcase for [TeleBotHost](https://telebothost.com) developers and bots.
 
 | App | URL |
 |-----|-----|
-| Explore | https://teledevs.me |
+| TeleDevs | https://teledevs.me |
 | Console | https://console.telebothost.com |
 | API | https://api.telebothost.com/api/v1 |
 
@@ -46,7 +46,7 @@ NEXT_PUBLIC_CONSOLE_URL=http://localhost:3030
 | Path | Description |
 |------|-------------|
 | `/` | Home |
-| `/about` | About Explore |
+| `/about` | About TeleDevs |
 | `/how-it-works` | Publish flow |
 | `/faq` | FAQ |
 | `/upgrade` | Plans |

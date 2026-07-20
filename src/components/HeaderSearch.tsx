@@ -229,7 +229,7 @@ export function HeaderSearch() {
               View all results
             </Link>
             <Link href="/about" className="text-accent hover:underline" onClick={() => setOpen(false)}>
-              About Explore
+              About TeleDevs
             </Link>
           </div>
         </div>

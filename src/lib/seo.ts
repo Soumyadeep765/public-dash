@@ -1,21 +1,21 @@
 import type { Metadata } from "next";
 import { absoluteUrl, getSiteUrl } from "./site";
 
-export const SITE_NAME = "TeleBotHost Explore";
+export const SITE_NAME = "TeleDevs";
 export const SITE_TAGLINE =
   "Browse public TeleBotHost developers, bot templates, and community store listings.";
 
 export const DEFAULT_DESCRIPTION =
-  "Official public showcase for TeleBotHost. Explore developer profiles, published Telegram bots, README docs, and command source like a repository.";
+  "TeleDevs is the official public showcase for TeleBotHost. Browse developer profiles, published Telegram bots, README docs, and command source like a repository.";
 
 const DEFAULT_KEYWORDS = [
+  "TeleDevs",
+  "teledevs.me",
   "TeleBotHost",
   "Telegram bots",
   "bot templates",
   "Telegram bot store",
   "bot hosting",
-  "TeleBotHost Explore",
-  "teledevs.me",
   "public bot source",
   "Telegram bot developers",
 ];

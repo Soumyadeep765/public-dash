@@ -30,7 +30,7 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
   const url = absoluteUrl(repoTreeUrl(repo.basePath, dirPath));
   return {
     title,
-    description: `Browse ${dirPath || "files"} in ${repo.owner}/${repo.handle} on TeleBotHost Explore.`,
+    description: `Browse ${dirPath || "files"} in ${repo.owner}/${repo.handle} on TeleDevs.`,
     alternates: { canonical: url },
     openGraph: { title, url, type: "website" },
     robots: { index: true, follow: true },

@@ -1,7 +1,7 @@
 import { ImageResponse } from "next/og";
 
 export const runtime = "edge";
-export const alt = "TeleBotHost Explore";
+export const alt = "TeleDevs";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -52,7 +52,7 @@ export default function OpenGraphImage() {
 
         <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
           <div style={{ fontSize: 72, fontWeight: 700, letterSpacing: -1.5, lineHeight: 1.05 }}>
-            Explore
+            TeleDevs
           </div>
           <div style={{ fontSize: 30, color: "#9198a1", maxWidth: 820, lineHeight: 1.35 }}>
             Public developers, bot templates, and community store listings.

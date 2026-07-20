@@ -55,7 +55,8 @@ export const metadata: Metadata = {
     "bot templates",
     "Telegram bot store",
     "bot hosting",
-    "TeleBotHost Explore",
+    "TeleDevs",
+    "teledevs.me",
   ],
   alternates: {
     canonical: site,

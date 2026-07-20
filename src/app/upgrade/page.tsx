@@ -8,15 +8,15 @@ import { pageMetadata } from "@/lib/seo";
 export const metadata: Metadata = pageMetadata({
   title: "Plans & upgrades",
   description:
-    "See how TeleBotHost hosting, publishing, and Explore fit together. Upgrade plans in the console.",
+    "See how TeleBotHost hosting, publishing, and TeleDevs fit together. Upgrade plans in the console.",
   path: "/upgrade",
 });
 
 const points = [
   "Host and run Telegram bots without babysitting servers",
-  "Publish templates and store listings that show up on Explore",
+  "Publish templates and store listings that show up on TeleDevs",
   "Share stable bot URLs with README, commands, and env placeholders",
-  "Keep secrets in the console. Explore only shows what you publish",
+  "Keep secrets in the console. TeleDevs only shows what you publish",
 ];
 
 export default function UpgradePage() {
@@ -28,7 +28,7 @@ export default function UpgradePage() {
         <p className="text-sm font-medium text-muted">TeleBotHost</p>
         <h1 className="text-3xl font-semibold tracking-tight">Plans & upgrades</h1>
         <p className="text-base text-muted">
-          Explore itself is free to browse. Hosting, limits, and paid tiers live in the
+          TeleDevs itself is free to browse. Hosting, limits, and paid tiers live in the
           TeleBotHost console. That is where you upgrade when you need more room to ship.
         </p>
       </header>
@@ -44,7 +44,7 @@ export default function UpgradePage() {
           ))}
         </ul>
         <p className="text-sm text-muted">
-          Explore is the public branch of that product. Same account. Same bots. Public pages
+          TeleDevs is the public branch of that product. Same account. Same bots. Public pages
           for the work you choose to share.
         </p>
       </section>
@@ -53,7 +53,7 @@ export default function UpgradePage() {
         <h2 className="text-xl font-semibold">Where to upgrade</h2>
         <p className="text-muted">
           Open the console, check your plan, and pick the tier that matches how many bots and
-          resources you need. Pricing and feature gates are managed there, not on Explore.
+          resources you need. Pricing and feature gates are managed there, not on TeleDevs.
         </p>
         <p className="text-muted">
           Prefer the marketing site first? Start at{" "}
@@ -77,7 +77,7 @@ export default function UpgradePage() {
             Open console
           </a>
           <Link href="/about" className="btn">
-            About Explore
+            About TeleDevs
           </Link>
         </div>
       </section>

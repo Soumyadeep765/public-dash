@@ -20,7 +20,7 @@ export default function NotFound() {
             Home
           </Link>
           <Link href="/explore" className="btn btn-primary">
-            Explore
+            Community
           </Link>
         </div>
       </div>

@@ -8,7 +8,7 @@ import { getConsoleBaseUrl } from "@/lib/session";
 export const metadata: Metadata = pageMetadata({
   title: "FAQ",
   description:
-    "Common questions about TeleBotHost Explore, publishing bots, privacy, and public profiles.",
+    "Common questions about TeleDevs, publishing bots, privacy, and public profiles.",
   path: "/faq",
 });
 
@@ -17,12 +17,12 @@ type Qa = { q: string; a: ReactNode; plain: string };
 export default function FaqPage() {
   const items: Qa[] = [
     {
-      q: "Is Explore part of TeleBotHost?",
+      q: "Is TeleDevs part of TeleBotHost?",
       plain:
-        "Yes. Explore is an official TeleBotHost product. It is the public browse layer for bots and developers on the platform. Hosting and editing stay in the console.",
+        "Yes. TeleDevs is an official TeleBotHost product. It is the public browse layer for bots and developers on the platform. Hosting and editing stay in the console.",
       a: (
         <>
-          Yes. Explore is an official TeleBotHost product. It is the public browse layer for bots
+          Yes. TeleDevs is an official TeleBotHost product. It is the public browse layer for bots
           and developers on the platform. Hosting and editing stay in the{" "}
           <a href={getConsoleBaseUrl()} className="link">
             console
@@ -43,14 +43,14 @@ export default function FaqPage() {
       ),
     },
     {
-      q: "How do I get my bot on Explore?",
+      q: "How do I get my bot on TeleDevs?",
       plain:
-        "Publish it from the console as a template or community store listing. Then open Explore or your profile.",
+        "Publish it from the console as a template or community store listing. Then open TeleDevs or your profile.",
       a: (
         <>
           Publish it from the console as a template or community store listing. Then open{" "}
           <Link href="/explore" className="link">
-            Explore
+            community bots
           </Link>{" "}
           or your profile. See{" "}
           <Link href="/how-it-works" className="link">
@@ -73,8 +73,8 @@ export default function FaqPage() {
     },
     {
       q: "Are env secret values visible?",
-      plain: "No. Explore shows env names and placeholders only. Values stay in the console.",
-      a: <>No. Explore shows env names and placeholders only. Values stay in the console.</>,
+      plain: "No. TeleDevs shows env names and placeholders only. Values stay in the console.",
+      a: <>No. TeleDevs shows env names and placeholders only. Values stay in the console.</>,
     },
   ];
 

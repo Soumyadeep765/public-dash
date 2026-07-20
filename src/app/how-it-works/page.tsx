@@ -6,7 +6,7 @@ import { getConsoleDashboardUrl, getConsoleSignupUrl } from "@/lib/session";
 export const metadata: Metadata = pageMetadata({
   title: "How it works",
   description:
-    "Learn how TeleBotHost bots move from the console to a public Explore page with README, commands, and shareable links.",
+    "Learn how TeleBotHost bots move from the console to a public TeleDevs page with README, commands, and shareable links.",
   path: "/how-it-works",
 });
 
@@ -19,7 +19,7 @@ const steps = [
   {
     n: "2",
     title: "Publish on purpose",
-    body: "Mark a bot as a template or list it in the community store. Unpublished bots never appear on Explore.",
+    body: "Mark a bot as a template or list it in the community store. Unpublished bots never appear on TeleDevs.",
   },
   {
     n: "3",
@@ -38,9 +38,9 @@ export default function HowItWorksPage() {
     <div className="shell max-w-3xl space-y-8">
       <header className="space-y-3 border-b border-border pb-6">
         <p className="text-sm font-medium text-muted">Guides</p>
-        <h1 className="text-3xl font-semibold tracking-tight">How Explore works</h1>
+        <h1 className="text-3xl font-semibold tracking-tight">How TeleDevs works</h1>
         <p className="text-base text-muted">
-          Short version: you host on TeleBotHost, you choose what goes public, Explore shows it
+          Short version: you host on TeleBotHost, you choose what goes public, TeleDevs shows it
           in a repo-style layout.
         </p>
       </header>
@@ -62,7 +62,7 @@ export default function HowItWorksPage() {
       <section className="space-y-3">
         <h2 className="text-xl font-semibold">What stays private</h2>
         <p className="text-muted">
-          Env values never appear on Explore. Secrets and account credentials stay in the console.
+          Env values never appear on TeleDevs. Secrets and account credentials stay in the console.
           Public pages only show what you publish on purpose.
         </p>
       </section>

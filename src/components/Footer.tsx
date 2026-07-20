@@ -13,7 +13,7 @@ export function Footer() {
         <div className="space-y-3 sm:col-span-2 lg:col-span-1">
           <div className="flex items-center gap-2 font-semibold text-fg">
             <TbhLogo className="h-5 w-5" />
-            TeleBotHost Explore
+            TeleDevs
           </div>
           <AffiliationNote />
         </div>
@@ -23,7 +23,7 @@ export function Footer() {
           <ul className="space-y-1.5">
             <li>
               <Link href="/explore" className="hover:text-fg hover:underline">
-                Explore bots
+                Community bots
               </Link>
             </li>
             <li>
@@ -93,7 +93,7 @@ export function Footer() {
       </div>
 
       <div className="shell mt-8 border-t border-border pt-4 text-xs">
-        <p>© {new Date().getFullYear()} TeleBotHost. Explore is an official product.</p>
+        <p>© {new Date().getFullYear()} TeleBotHost. TeleDevs is an official product.</p>
       </div>
     </footer>
   );

@@ -45,7 +45,7 @@ export default async function TemplatesPage({ searchParams }: { searchParams: Se
           <p className="mt-1 text-sm text-muted">Browse the community store meanwhile.</p>
           <div className="mt-4 flex justify-center gap-2">
             <Link href="/explore" className="btn btn-primary">
-              Explore store
+              Community store
             </Link>
           </div>
         </div>

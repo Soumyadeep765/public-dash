@@ -31,7 +31,7 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
     const rawBio = (user.profile.bio || "").replace(/\s+/g, " ").trim();
     const description =
       rawBio.slice(0, 155) ||
-      `${user.profile.name} on TeleBotHost Explore. @${user.profile.username} · ${user.stats.published_bots} published bots.`;
+      `${user.profile.name} on TeleDevs. @${user.profile.username} · ${user.stats.published_bots} published bots.`;
     return pageMetadata({
       title,
       description,
@@ -119,7 +119,7 @@ export default async function ProfilePage({ params }: { params: Params }) {
             )}
             <div className="flex flex-wrap gap-2 sm:pb-1">
               <Link href="/explore" className="btn btn-sm">
-                Explore bots
+                Browse bots
               </Link>
               <a href={getConsoleSignupUrl()} className="btn btn-sm btn-primary">
                 Join TeleBotHost

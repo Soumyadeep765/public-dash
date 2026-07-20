@@ -25,7 +25,7 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
   const title = `${repo.bot.name} · @${repo.handle}`;
   const description =
     (repo.bot.description || "").trim().slice(0, 155) ||
-    `${repo.bot.name} by @${repo.owner} on TeleBotHost Explore. Browse README, commands, and .env placeholders.`;
+    `${repo.bot.name} by @${repo.owner} on TeleDevs. Browse README, commands, and .env placeholders.`;
 
   return {
     title,

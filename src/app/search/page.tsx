@@ -19,7 +19,7 @@ export async function generateMetadata({
   return pageMetadata({
     title: q ? `Search: ${q}` : "Search",
     description:
-      "Search TeleBotHost Explore for developers and published Telegram bots.",
+      "Search TeleDevs for developers and published Telegram bots.",
     path: q ? `/search?q=${encodeURIComponent(q)}` : "/search",
     index: !q,
     follow: true,

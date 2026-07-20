@@ -5,7 +5,7 @@ import type { Metadata } from "next";
 import { pageMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = pageMetadata({
-  title: "Explore community bots",
+  title: "Community bots",
   description:
     "Browse TeleBotHost community store listings. Open public Telegram bots, READMEs, and command source from developers worldwide.",
   path: "/explore",
@@ -29,7 +29,7 @@ export default async function ExplorePage({ searchParams }: { searchParams: Sear
   return (
     <div className="shell space-y-5">
       <div>
-        <h1 className="text-2xl font-semibold">Explore</h1>
+        <h1 className="text-2xl font-semibold">Community</h1>
         <p className="mt-1 text-muted">Community store listings from TeleBotHost.</p>
       </div>
 

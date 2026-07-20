@@ -57,16 +57,16 @@ export default async function HomePage() {
             <TbhLogo className="h-12 w-12" />
           </div>
           <h1 className="text-4xl font-semibold tracking-tight sm:text-5xl">
-            Find bots worth sharing
+            TeleDevs
           </h1>
           <p className="mx-auto mt-4 max-w-xl text-base text-muted">
-            Explore is the public side of TeleBotHost. Open a developer profile, read the README,
-            and browse command source like a repo. Official product. Same platform you already use
-            to host bots.
+            The public side of TeleBotHost. Open a developer profile, read the README, and browse
+            command source like a repo. Official product. Same platform you already use to host
+            bots.
           </p>
           <div className="mt-6 flex flex-wrap items-center justify-center gap-2">
             <Link href="/explore" className="btn btn-primary">
-              Explore bots
+              Browse bots
             </Link>
             <a href={getConsoleSignupUrl()} className="btn">
               Get started
@@ -119,7 +119,7 @@ export default async function HomePage() {
         <div>
           <h3 className="font-semibold">Build on TeleBotHost</h3>
           <p className="text-sm text-muted">
-            Host bots in the console, publish when you are ready, and share the Explore link.
+            Host bots in the console, publish when you are ready, and share the TeleDevs link.
           </p>
         </div>
         <div className="flex flex-wrap gap-2">

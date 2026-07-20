@@ -2,10 +2,10 @@ import type { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "TeleBotHost Explore",
-    short_name: "TBH Explore",
+    name: "TeleDevs",
+    short_name: "TeleDevs",
     description:
-      "Public TeleBotHost developers, bot templates, and community store listings.",
+      "Public TeleBotHost developers, bot templates, and community store listings on teledevs.me.",
     start_url: "/",
     display: "standalone",
     background_color: "#0d1117",

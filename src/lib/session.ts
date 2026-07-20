@@ -58,7 +58,7 @@ export async function getCurrentAccount(): Promise<CurrentAccount | null> {
   }
 }
 
-/** Client-side cookie hint (same host as Explore). */
+/** Client-side cookie hint (same host as TeleDevs). */
 export function getCurrentAccountFromDocument(): CurrentAccount | null {
   return parseCurrentAccountCookie(readCookieRaw(CURRENT_ACCOUNT_COOKIE));
 }

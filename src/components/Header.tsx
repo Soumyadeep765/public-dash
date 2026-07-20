@@ -37,7 +37,7 @@ export function Header() {
 
         <nav className="hidden items-center gap-1 text-sm font-medium text-fg md:flex">
           <Link href="/explore" className="rounded-md px-2 py-1 hover:bg-btn-hover">
-            Explore
+            Community
           </Link>
           <Link href="/templates" className="rounded-md px-2 py-1 hover:bg-btn-hover">
             Templates

@@ -1,4 +1,4 @@
-/** Marketing / affiliation helpers for Explore. */
+/** Marketing / affiliation helpers for TeleDevs. */
 
 export const MAIN_SITE_URL = "https://telebothost.com";
 export const DOCS_API_URL = "https://api.telebothost.com/api/v1/docs";

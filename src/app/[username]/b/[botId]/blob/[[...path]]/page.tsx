@@ -31,7 +31,7 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
   if (!node || node.kind === "folder") return { title: "File not found" };
 
   const title = `${filePath} · ${repo.owner}/${repo.handle}`;
-  const description = `View ${filePath} from ${repo.bot.name} by @${repo.owner} on TeleBotHost Explore.`;
+  const description = `View ${filePath} from ${repo.bot.name} by @${repo.owner} on TeleDevs.`;
   const url = absoluteUrl(repoBlobUrl(repo.basePath, filePath));
 
   return {

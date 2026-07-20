@@ -62,7 +62,7 @@ export function HomeSignedInBanner() {
           )}
           <div>
             <p className="font-semibold">Signed in as @{account.username}</p>
-            <p className="text-sm text-muted">Optional — Explore works the same when signed out.</p>
+            <p className="text-sm text-muted">Optional — TeleDevs works the same when signed out.</p>
           </div>
         </div>
         <div className="flex flex-wrap gap-2">

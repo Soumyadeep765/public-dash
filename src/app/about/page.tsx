@@ -6,9 +6,9 @@ import { pageMetadata } from "@/lib/seo";
 import { getConsoleBaseUrl, getConsoleSignupUrl } from "@/lib/session";
 
 export const metadata: Metadata = pageMetadata({
-  title: "About Explore",
+  title: "About TeleDevs",
   description:
-    "Learn what TeleBotHost Explore is, how it connects to the console, and how public bot profiles work.",
+    "Learn what TeleDevs is, how it connects to the TeleBotHost console, and how public bot profiles work.",
   path: "/about",
 });
 
@@ -18,10 +18,10 @@ export default function AboutPage() {
   return (
     <div className="shell max-w-3xl space-y-8">
       <header className="space-y-3 border-b border-border pb-6">
-        <p className="text-sm font-medium text-muted">TeleBotHost · Explore</p>
-        <h1 className="text-3xl font-semibold tracking-tight">About Explore</h1>
+        <p className="text-sm font-medium text-muted">TeleBotHost · TeleDevs</p>
+        <h1 className="text-3xl font-semibold tracking-tight">About TeleDevs</h1>
         <p className="text-base text-muted">
-          Explore is the public side of TeleBotHost. You browse developer profiles, published
+          TeleDevs is the public side of TeleBotHost. You browse developer profiles, published
           bots, READMEs, and command source the way you would browse a code repo. Hosting and
           editing still happen in the console.
         </p>
@@ -31,7 +31,7 @@ export default function AboutPage() {
       <section className="space-y-3">
         <h2 className="text-xl font-semibold">Why this exists</h2>
         <p className="text-muted">
-          A lot of Telegram bots never leave a private dashboard. Explore gives you a shareable
+          A lot of Telegram bots never leave a private dashboard. TeleDevs gives you a shareable
           page for work you already publish on TeleBotHost. Someone can open your bot, read the
           docs, peek at commands, and decide if they want to use or fork it.
         </p>
@@ -44,12 +44,12 @@ export default function AboutPage() {
       <section className="space-y-3">
         <h2 className="text-xl font-semibold">Official TeleBotHost product</h2>
         <p className="text-muted">
-          Explore is not a third-party mirror. Listings you publish as templates or store bots
+          TeleDevs is not a third-party mirror. Listings you publish as templates or store bots
           show up here. Private bots stay private.
         </p>
         <ul className="list-disc space-y-2 pl-5 text-muted">
           <li>
-            Explore:{" "}
+            TeleDevs:{" "}
             <a href="https://teledevs.me" className="link">
               teledevs.me
             </a>
