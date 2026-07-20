@@ -64,6 +64,8 @@ export interface BotCommand {
   need_reply: boolean;
   is_web: number;
   folder?: string | null;
+  created_at?: string | null;
+  updated_at?: string | null;
 }
 
 export interface BotEnv {
@@ -145,4 +147,6 @@ export interface RepoFileNode {
   language?: string;
   content?: string;
   children?: RepoFileNode[];
+  /** ISO timestamp — per-command for files; newest child for folders */
+  updatedAt?: string | null;
 }

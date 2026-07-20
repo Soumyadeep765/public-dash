@@ -8,7 +8,7 @@ import { RepoAboutSidebar } from "@/components/repo/RepoAboutSidebar";
 import { RelatedBots } from "@/components/repo/RelatedBots";
 import { ShareMenu } from "@/components/repo/ShareMenu";
 import { getRelatedPublicBots } from "@/lib/api";
-import { findRepoFile } from "@/lib/files";
+import { findRepoFile, flattenUnder } from "@/lib/files";
 import { listDirEntries, loadRepoByIdResult } from "@/lib/repo";
 import { absoluteUrl } from "@/lib/site";
 
@@ -114,7 +114,8 @@ export default async function BotRepoByIdPage({ params }: { params: Params }) {
           <FileTable
             basePath={basePath}
             entries={entries}
-            updatedAt={bot.updated_at}
+            searchFiles={flattenUnder(tree)}
+            fallbackUpdatedAt={bot.updated_at}
             searchable
           />
 

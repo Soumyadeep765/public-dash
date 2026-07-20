@@ -111,26 +111,103 @@ export function buildBotYaml(bot: PublishedBotDetail): string {
   ].join("\n");
 }
 
+function sanitizeFolderSegment(name: string): string {
+  const clean = String(name || "")
+    .trim()
+    .replace(/[\\/:*?"<>|]/g, "_");
+  return clean || "folder";
+}
+
+function toIso(value: unknown): string | null {
+  if (!value) return null;
+  if (value instanceof Date) return value.toISOString();
+  const raw = String(value);
+  const t = Date.parse(raw);
+  return Number.isFinite(t) ? new Date(t).toISOString() : null;
+}
+
+function maxIso(...values: Array<string | null | undefined>): string | null {
+  let best: string | null = null;
+  let bestMs = -Infinity;
+  for (const value of values) {
+    if (!value) continue;
+    const ms = Date.parse(value);
+    if (!Number.isFinite(ms)) continue;
+    if (ms > bestMs) {
+      bestMs = ms;
+      best = value;
+    }
+  }
+  return best;
+}
+
+function newestUpdatedAt(nodes: RepoFileNode[]): string | null {
+  let best: string | null = null;
+  for (const node of nodes) {
+    best = maxIso(best, node.updatedAt || null);
+    if (node.children?.length) best = maxIso(best, newestUpdatedAt(node.children));
+  }
+  return best;
+}
+
 export function buildRepoTree(bot: PublishedBotDetail): RepoFileNode[] {
+  const botUpdated = toIso(bot.updated_at);
   const readme =
     bot.readme?.trim() ||
     `# ${bot.name}\n\n${bot.description || "No README published yet."}\n\n` +
       `Telegram: [@${(bot.bot_username || "").replace(/^@/, "")}](https://t.me/${(bot.bot_username || "").replace(/^@/, "")})\n`;
 
-  const commandNodes: RepoFileNode[] = (bot.commands || []).map((cmd, index) => {
+  const folderMap = new Map<string, RepoFileNode[]>();
+  const rootCommands: RepoFileNode[] = [];
+
+  (bot.commands || []).forEach((cmd, index) => {
     const name = commandFileName(cmd.name);
-    const path = `commands/${name}`;
-    return {
-      id: `cmd-${index}-${name}`,
+    const folderName = cmd.folder ? sanitizeFolderSegment(cmd.folder) : "";
+    const path = folderName ? `commands/${folderName}/${name}` : `commands/${name}`;
+    const updatedAt = toIso(cmd.updated_at) || toIso(cmd.created_at) || botUpdated;
+    const node: RepoFileNode = {
+      id: `cmd-${index}-${path}`,
       name,
       path,
-      kind: "command" as const,
+      kind: "command",
       language: languageFromFileName(name),
       content: buildCommandFileContent(cmd),
+      updatedAt,
     };
+    if (folderName) {
+      const list = folderMap.get(folderName) || [];
+      list.push(node);
+      folderMap.set(folderName, list);
+    } else {
+      rootCommands.push(node);
+    }
   });
 
-  commandNodes.sort((a, b) => a.name.localeCompare(b.name));
+  rootCommands.sort((a, b) => a.name.localeCompare(b.name));
+
+  const folderNodes: RepoFileNode[] = [...folderMap.entries()]
+    .map(([folderName, children]) => {
+      children.sort((a, b) => a.name.localeCompare(b.name));
+      return {
+        id: `folder-${folderName}`,
+        name: folderName,
+        path: `commands/${folderName}`,
+        kind: "folder" as const,
+        children,
+        updatedAt: newestUpdatedAt(children),
+      };
+    })
+    .sort((a, b) => a.name.localeCompare(b.name));
+
+  const commandChildren = [...folderNodes, ...rootCommands];
+  const commandsFolder: RepoFileNode = {
+    id: "commands",
+    name: "commands",
+    path: "commands",
+    kind: "folder",
+    children: commandChildren,
+    updatedAt: newestUpdatedAt(commandChildren) || botUpdated,
+  };
 
   return [
     {
@@ -140,6 +217,7 @@ export function buildRepoTree(bot: PublishedBotDetail): RepoFileNode[] {
       kind: "readme",
       language: "markdown",
       content: readme,
+      updatedAt: botUpdated,
     },
     {
       id: "env",
@@ -148,6 +226,7 @@ export function buildRepoTree(bot: PublishedBotDetail): RepoFileNode[] {
       kind: "env",
       language: "dotenv",
       content: buildEnvFileContent(bot.envs || []),
+      updatedAt: botUpdated,
     },
     {
       id: "yaml",
@@ -156,15 +235,18 @@ export function buildRepoTree(bot: PublishedBotDetail): RepoFileNode[] {
       kind: "yaml",
       language: "yaml",
       content: buildBotYaml(bot),
+      updatedAt: botUpdated,
     },
-    {
-      id: "commands",
-      name: "commands",
-      path: "commands",
-      kind: "folder",
-      children: commandNodes,
-    },
+    commandsFolder,
   ];
+}
+
+/** All files under a directory (recursive). Empty dirPath = whole tree. */
+export function flattenUnder(nodes: RepoFileNode[], dirPath = ""): RepoFileNode[] {
+  if (!dirPath) return flattenRepoFiles(nodes);
+  const folder = findRepoFile(nodes, dirPath);
+  if (!folder || folder.kind !== "folder") return [];
+  return flattenRepoFiles(folder.children || []);
 }
 
 export function flattenRepoFiles(nodes: RepoFileNode[]): RepoFileNode[] {

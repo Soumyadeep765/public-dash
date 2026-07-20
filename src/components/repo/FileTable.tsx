@@ -18,12 +18,15 @@ function iconFor(node: RepoFileNode) {
 export function FileTable({
   basePath,
   entries,
-  updatedAt,
+  searchFiles,
+  fallbackUpdatedAt,
   searchable = false,
 }: {
   basePath: string;
   entries: RepoFileNode[];
-  updatedAt?: string;
+  /** Recursive file list for "Go to file" (includes nested folders). */
+  searchFiles?: RepoFileNode[];
+  fallbackUpdatedAt?: string;
   searchable?: boolean;
 }) {
   const [q, setQ] = useState("");
@@ -31,20 +34,23 @@ export function FileTable({
   const filtered = useMemo(() => {
     const needle = q.trim().toLowerCase();
     if (!needle) return entries;
-    return entries.filter((entry) => {
+    const pool = searchFiles?.length ? searchFiles : entries;
+    return pool.filter((entry) => {
       return (
         entry.name.toLowerCase().includes(needle) ||
         entry.path.toLowerCase().includes(needle)
       );
     });
-  }, [entries, q]);
+  }, [entries, searchFiles, q]);
+
+  const searching = Boolean(q.trim());
 
   return (
     <div className="box overflow-hidden">
       <div className="flex flex-col gap-2 border-b border-border bg-canvas-subtle px-3 py-2 sm:flex-row sm:items-center sm:justify-between">
         <span className="text-xs text-muted">
           Source · {filtered.length}
-          {q.trim() ? ` of ${entries.length}` : ""} items
+          {searching ? ` match${filtered.length === 1 ? "" : "es"}` : " items"}
         </span>
         {searchable ? (
           <label className="relative block w-full sm:max-w-[220px]">
@@ -68,6 +74,8 @@ export function FileTable({
             entry.kind === "folder"
               ? repoTreeUrl(basePath, entry.path)
               : repoBlobUrl(basePath, entry.path);
+          const stamp = entry.updatedAt || fallbackUpdatedAt;
+          const showPath = searching && entry.path !== entry.name;
 
           return (
             <li key={entry.id}>
@@ -77,19 +85,21 @@ export function FileTable({
               >
                 <span className="flex min-w-0 items-center gap-2">
                   {iconFor(entry)}
-                  <span
-                    className={
-                      entry.kind === "folder"
-                        ? "truncate font-medium text-accent"
-                        : "truncate font-mono text-[13px] text-accent"
-                    }
-                  >
-                    {entry.name}
-                    {entry.kind === "folder" ? "/" : ""}
+                  <span className="min-w-0">
+                    <span
+                      className={
+                        entry.kind === "folder"
+                          ? "block truncate font-medium text-accent"
+                          : "block truncate font-mono text-[13px] text-accent"
+                      }
+                    >
+                      {showPath ? entry.path : entry.name}
+                      {entry.kind === "folder" && !showPath ? "/" : ""}
+                    </span>
                   </span>
                 </span>
                 <span className="hidden text-right text-xs text-muted sm:block">
-                  {updatedAt ? timeAgo(updatedAt) : "—"}
+                  {stamp ? timeAgo(stamp) : "—"}
                 </span>
               </Link>
             </li>
@@ -97,7 +107,7 @@ export function FileTable({
         })}
         {!filtered.length ? (
           <li className="px-3 py-8 text-center text-sm text-muted">
-            {q.trim() ? "No matching files." : "This folder is empty."}
+            {searching ? "No matching files." : "This folder is empty."}
           </li>
         ) : null}
       </ul>

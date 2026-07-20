@@ -5,6 +5,7 @@ import { BotRepoHeader } from "@/components/repo/BotRepoHeader";
 import { FileTable } from "@/components/repo/FileTable";
 import { PathBreadcrumbs } from "@/components/repo/PathBreadcrumbs";
 import { ShareMenu } from "@/components/repo/ShareMenu";
+import { flattenUnder } from "@/lib/files";
 import {
   decodeRepoPath,
   getNodeAtPath,
@@ -88,7 +89,8 @@ export default async function TreeByIdPage({ params }: { params: Params }) {
       <FileTable
         basePath={repo.basePath}
         entries={entries}
-        updatedAt={repo.bot.updated_at}
+        searchFiles={flattenUnder(repo.tree, dirPath)}
+        fallbackUpdatedAt={repo.bot.updated_at}
         searchable
       />
     </div>
