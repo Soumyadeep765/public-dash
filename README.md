@@ -7,7 +7,6 @@ Public showcase for [TeleBotHost](https://telebothost.com) developers and bots â
 - Browse community store and templates
 - Developer profiles and bot source views
 - Light and dark themes
-
 ## Production
 
 | App | URL |
