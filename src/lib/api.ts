@@ -41,7 +41,9 @@ async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
       Accept: "application/json",
       ...(init?.headers || {}),
     },
-    ...(isBrowser ? { cache: "no-store" as RequestCache } : { next: { revalidate: 60 } }),
+    ...(isBrowser
+      ? { cache: "no-store" as RequestCache }
+      : { next: { revalidate: 15 } }),
   });
 
   let body: unknown = null;

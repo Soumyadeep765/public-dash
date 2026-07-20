@@ -13,7 +13,7 @@ export const metadata: Metadata = pageMetadata({
   keywords: ["Telegram bot templates", "bot blueprints"],
 });
 
-export const revalidate = 60;
+export const revalidate = 15;
 
 type SearchParams = Promise<{ q?: string }>;
 

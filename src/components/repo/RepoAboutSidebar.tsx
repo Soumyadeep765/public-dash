@@ -78,9 +78,18 @@ export function RepoAboutSidebar({
             href={`/${owner}`}
             className="inline-flex items-center gap-2 text-accent hover:underline"
           >
-            <span className="grid h-7 w-7 place-items-center rounded-full border border-border bg-canvas-subtle text-xs font-semibold text-fg">
-              {owner.slice(0, 1).toUpperCase()}
-            </span>
+            {bot.owner_avatar ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={bot.owner_avatar}
+                alt=""
+                className="h-7 w-7 rounded-full border border-border object-cover"
+              />
+            ) : (
+              <span className="grid h-7 w-7 place-items-center rounded-full border border-border bg-canvas-subtle text-xs font-semibold text-fg">
+                {owner.slice(0, 1).toUpperCase()}
+              </span>
+            )}
             @{owner}
           </Link>
         </div>

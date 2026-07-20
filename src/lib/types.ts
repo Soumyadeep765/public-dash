@@ -43,6 +43,7 @@ export interface PublishedBotSummary {
   photo: string;
   bot_username: string;
   owner_username: string | null;
+  owner_avatar?: string | null;
   listing_type: ListingType | null;
   listing_type_label: string | null;
   description: string;

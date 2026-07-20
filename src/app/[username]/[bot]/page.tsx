@@ -9,7 +9,7 @@ import { BotPhoto } from "@/components/BotPhoto";
 
 type Params = Promise<{ username: string; bot: string }>;
 
-export const revalidate = 60;
+export const revalidate = 15;
 
 export async function generateMetadata({ params }: { params: Params }): Promise<Metadata> {
   const { username, bot } = await params;

@@ -18,7 +18,7 @@ import { absoluteUrl } from "@/lib/site";
 
 type Params = Promise<{ username: string; botId: string; path?: string[] }>;
 
-export const revalidate = 60;
+export const revalidate = 15;
 
 export async function generateMetadata({ params }: { params: Params }): Promise<Metadata> {
   const { username, botId, path: segments } = await params;
