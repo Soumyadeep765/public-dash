@@ -3,6 +3,7 @@ import { ExternalLink, FileCode2, KeyRound, Terminal } from "lucide-react";
 import type { PublishedBotDetail } from "@/lib/types";
 import { formatDate, timeAgo } from "@/lib/format";
 import { getConsoleBaseUrl } from "@/lib/session";
+import { ForkBotButton } from "@/components/repo/ForkBotButton";
 
 export function RepoAboutSidebar({
   bot,
@@ -46,11 +47,14 @@ export function RepoAboutSidebar({
         </ul>
 
         <div className="flex flex-col gap-2 border-t border-border pt-3">
+          <div className="[&_button]:w-full [&_button]:justify-center">
+            <ForkBotButton botId={bot.bot_id} listingType={bot.listing_type} />
+          </div>
           <a
             href={`https://t.me/${handle}`}
             target="_blank"
             rel="noreferrer"
-            className="btn btn-sm btn-primary justify-center"
+            className="btn btn-sm justify-center"
           >
             Open on Telegram
             <ExternalLink size={14} />

@@ -3,6 +3,7 @@ import { ExternalLink, Eye, FileCode2, KeyRound } from "lucide-react";
 import type { PublishedBotDetail } from "@/lib/types";
 import { formatDate, timeAgo } from "@/lib/format";
 import { botExplorePath } from "@/lib/repo";
+import { ForkBotButton } from "@/components/repo/ForkBotButton";
 
 export function BotRepoHeader({
   bot,
@@ -49,6 +50,7 @@ export function BotRepoHeader({
         </div>
 
         <div className="flex flex-wrap gap-2">
+          <ForkBotButton botId={bot.bot_id} listingType={bot.listing_type} />
           <Link href={`/${owner}`} className="btn btn-sm">
             <Eye size={14} />
             Profile
@@ -57,7 +59,7 @@ export function BotRepoHeader({
             href={`https://t.me/${handle}`}
             target="_blank"
             rel="noreferrer"
-            className="btn btn-sm btn-primary"
+            className="btn btn-sm"
           >
             Telegram
             <ExternalLink size={14} />

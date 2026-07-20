@@ -53,5 +53,5 @@ NEXT_PUBLIC_CONSOLE_URL=http://localhost:3030
 | `/templates` | Public templates |
 | `/[username]` | Developer profile (Overview) |
 | `/[username]?tab=bots` | Developer bots tab (`?bots` also works) |
-| `/[username]/b/[botId]` | Bot source view |
+| `/[username]/b/[botId]` | Bot source view (Fork → console `#fork/{id}`) |
 | `/search` | Search |

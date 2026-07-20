@@ -91,7 +91,7 @@ export function UserNav({
               Your profile
             </Link>
             <Link
-              href={`/${account.username}`}
+              href={`/${account.username}?tab=bots`}
               className="flex items-center gap-2 px-3 py-2 hover:bg-row-hover"
               onClick={() => setOpen(false)}
             >
