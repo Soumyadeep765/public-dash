@@ -9,8 +9,8 @@ import { UserNav } from "./UserNav";
 import { useSessionAccount } from "./SessionProvider";
 import {
   getConsoleDashboardUrl,
-  getConsoleLoginUrl,
   getConsoleSignupUrl,
+  getTeledevsLoginPath,
 } from "@/lib/session";
 
 export function Header() {
@@ -51,7 +51,8 @@ export function Header() {
           <ThemeToggle />
           <UserNav
             account={account}
-            loginUrl={getConsoleLoginUrl("/")}
+            loginUrl={getTeledevsLoginPath()}
+            switchUrl={getTeledevsLoginPath("/", { switch: true })}
             signupUrl={getConsoleSignupUrl()}
             consoleUrl={getConsoleDashboardUrl()}
           />

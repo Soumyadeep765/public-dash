@@ -131,6 +131,56 @@ export function getConsoleBotDashUrl(botId: string | number): string {
   return `${getConsoleBaseUrl()}/#botdash/${botId}/tab/dash`;
 }
 
+/** TeleDevs login page (Continue with TeleBotHost). */
+export function getTeledevsLoginPath(nextPath?: string, opts?: { switch?: boolean }): string {
+  const params = new URLSearchParams();
+  if (nextPath) params.set("next", nextPath);
+  if (opts?.switch) params.set("switch", "1");
+  const q = params.toString();
+  return q ? `/login?${q}` : "/login";
+}
+
+function resetHandoffFlag(): void {
+  try {
+    sessionStorage.removeItem(HANDOFF_FLAG);
+  } catch {
+    /* ignore */
+  }
+}
+
+/**
+ * Continue with TeleBotHost — top-level console bridge handoff.
+ * Uses active console session, or console login if none.
+ */
+export function continueWithTelebothost(returnPath = "/"): void {
+  if (typeof window === "undefined") return;
+  resetHandoffFlag();
+  const returnUrl = new URL(returnPath, window.location.origin);
+  // Ensure handoff lands on /login so we can route `next` cleanly, or any return path
+  const bridge = new URL(getConsoleBridgeUrl());
+  bridge.searchParams.set("return", returnUrl.toString());
+  window.location.href = bridge.toString();
+}
+
+/**
+ * Switch TeleBotHost account — clear TeleDevs hint, force console login (add account).
+ */
+export function switchTelebothostAccount(returnPath = "/"): void {
+  if (typeof window === "undefined") return;
+  writeCurrentAccountCookie(null);
+  resetHandoffFlag();
+  const returnUrl = new URL(returnPath, window.location.origin);
+  const bridge = new URL(getConsoleBridgeUrl());
+  bridge.searchParams.set("return", returnUrl.toString());
+  bridge.searchParams.set("switch", "1");
+  window.location.href = bridge.toString();
+}
+
+export function signOutTeledevs(): void {
+  writeCurrentAccountCookie(null);
+  resetHandoffFlag();
+}
+
 function accountFromUserPayload(user: Record<string, unknown> | null | undefined): CurrentAccount | null {
   if (!user || typeof user !== "object") return null;
   const profile = (user.profile || {}) as Record<string, unknown>;
@@ -319,6 +369,13 @@ export async function resolveCurrentAccount(): Promise<CurrentAccount | null> {
   if (fromBridge) {
     writeCurrentAccountCookie(fromBridge);
     return fromBridge;
+  }
+
+  // Don't auto-bounce on the login screen — user chooses Continue / Switch there.
+  try {
+    if (window.location.pathname === "/login") return null;
+  } catch {
+    /* ignore */
   }
 
   // Cross-site iframe storage is partitioned — bounce once via top-level console.

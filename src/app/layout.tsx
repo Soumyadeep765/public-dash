@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { IBM_Plex_Mono, Source_Sans_3 } from "next/font/google";
 import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
+import { PendingForkRedirect } from "@/components/PendingForkRedirect";
 import { SessionProvider } from "@/components/SessionProvider";
 import { SiteJsonLd } from "@/components/SiteJsonLd";
 import { ThemeProvider } from "@/components/ThemeProvider";
@@ -96,6 +97,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
       <body className="flex min-h-full flex-col">
         <ThemeProvider>
           <SessionProvider>
+            <PendingForkRedirect />
             <SiteJsonLd />
             <Header />
             <main className="flex-1 py-6">{children}</main>

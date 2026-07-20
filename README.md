@@ -45,6 +45,7 @@ NEXT_PUBLIC_CONSOLE_URL=http://localhost:3030
 | Path | Description |
 |------|-------------|
 | `/` | Home |
+| `/login` | Sign in / switch via TeleBotHost |
 | `/about` | About TeleDevs |
 | `/how-it-works` | Publish flow |
 | `/faq` | FAQ |

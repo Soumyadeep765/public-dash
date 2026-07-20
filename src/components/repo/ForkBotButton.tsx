@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { GitFork, Loader2 } from "lucide-react";
 import { useSessionAccount } from "@/components/SessionProvider";
-import { getConsoleForkLoginUrl, getConsoleForkUrl } from "@/lib/session";
+import { getConsoleForkUrl, getTeledevsLoginPath } from "@/lib/session";
 
 export function ForkBotButton({
   botId,
@@ -15,7 +15,6 @@ export function ForkBotButton({
   const account = useSessionAccount();
   const [pending, setPending] = useState(false);
 
-  // Templates + store listings are forkable via POST /bot/{id}/clone
   const canFork =
     listingType === "bot_template" ||
     listingType === "community_store" ||
@@ -25,10 +24,20 @@ export function ForkBotButton({
 
   function onFork() {
     setPending(true);
-    const href = account
-      ? getConsoleForkUrl(botId)
-      : getConsoleForkLoginUrl(botId);
-    window.location.href = href;
+    if (account) {
+      window.location.href = getConsoleForkUrl(botId);
+      return;
+    }
+    try {
+      sessionStorage.setItem("tbh_pending_fork", String(botId));
+    } catch {
+      /* ignore */
+    }
+    const here =
+      typeof window !== "undefined"
+        ? `${window.location.pathname}${window.location.search}`
+        : "/";
+    window.location.href = getTeledevsLoginPath(here);
   }
 
   return (

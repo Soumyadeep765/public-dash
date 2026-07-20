@@ -2,7 +2,7 @@ import Link from "next/link";
 import { TbhLogo } from "@/components/TbhLogo";
 import { AffiliationNote } from "@/components/AffiliationNote";
 import { DOCS_API_URL, getMainSiteUrl } from "@/lib/brand";
-import { getConsoleLoginUrl, getConsoleSignupUrl } from "@/lib/session";
+import { getConsoleSignupUrl, getTeledevsLoginPath } from "@/lib/session";
 
 export function Footer() {
   const main = getMainSiteUrl();
@@ -74,7 +74,7 @@ export function Footer() {
               </a>
             </li>
             <li>
-              <a href={getConsoleLoginUrl("/")} className="hover:text-fg hover:underline">
+              <a href={getTeledevsLoginPath()} className="hover:text-fg hover:underline">
                 Sign in
               </a>
             </li>

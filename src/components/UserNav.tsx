@@ -2,18 +2,29 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import { ChevronDown, ExternalLink, LayoutDashboard, LogIn, User } from "lucide-react";
+import {
+  ChevronDown,
+  ExternalLink,
+  LayoutDashboard,
+  LogIn,
+  LogOut,
+  RefreshCw,
+  User,
+} from "lucide-react";
 import type { CurrentAccount } from "@/lib/session";
 import { initials } from "@/lib/format";
+import { signOutTeledevs } from "@/lib/session";
 
 export function UserNav({
   account,
   loginUrl,
+  switchUrl,
   signupUrl,
   consoleUrl,
 }: {
   account: CurrentAccount | null;
   loginUrl: string;
+  switchUrl: string;
   signupUrl: string;
   consoleUrl: string;
 }) {
@@ -31,9 +42,9 @@ export function UserNav({
   if (!account) {
     return (
       <div className="flex items-center gap-1.5">
-        <a href={loginUrl} className="btn btn-sm hidden sm:inline-flex">
+        <Link href={loginUrl} className="btn btn-sm hidden sm:inline-flex">
           Sign in
-        </a>
+        </Link>
         <a href={signupUrl} className="btn btn-sm btn-primary">
           Sign up
         </a>
@@ -43,6 +54,11 @@ export function UserNav({
 
   const label = account.name || account.username;
   const avatarFallback = initials(label);
+
+  function onSignOut() {
+    signOutTeledevs();
+    window.location.href = "/";
+  }
 
   return (
     <div className="relative" ref={ref}>
@@ -107,13 +123,30 @@ export function UserNav({
               <ExternalLink size={14} />
               Open console
             </a>
-            <a
-              href={loginUrl}
+            <Link
+              href={switchUrl}
               className="flex items-center gap-2 border-t border-border px-3 py-2 hover:bg-row-hover"
+              onClick={() => setOpen(false)}
+            >
+              <RefreshCw size={14} />
+              Switch account
+            </Link>
+            <Link
+              href={loginUrl}
+              className="flex items-center gap-2 px-3 py-2 hover:bg-row-hover"
+              onClick={() => setOpen(false)}
             >
               <LogIn size={14} />
-              Switch account
-            </a>
+              Sign in again
+            </Link>
+            <button
+              type="button"
+              className="flex w-full items-center gap-2 px-3 py-2 text-left hover:bg-row-hover"
+              onClick={onSignOut}
+            >
+              <LogOut size={14} />
+              Sign out on TeleDevs
+            </button>
           </div>
         </div>
       ) : null}
