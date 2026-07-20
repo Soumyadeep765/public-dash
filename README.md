@@ -51,6 +51,7 @@ NEXT_PUBLIC_CONSOLE_URL=http://localhost:3030
 | `/upgrade` | Plans |
 | `/explore` | Community store |
 | `/templates` | Public templates |
-| `/[username]` | Developer profile |
+| `/[username]` | Developer profile (Overview) |
+| `/[username]?tab=bots` | Developer bots tab (`?bots` also works) |
 | `/[username]/b/[botId]` | Bot source view |
 | `/search` | Search |

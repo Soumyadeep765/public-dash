@@ -1,14 +1,14 @@
 import type { ReactNode } from "react";
 import {
-  Github,
+  AtSign,
+  Camera,
+  Code2,
   Globe,
-  Instagram,
-  Linkedin,
   Link2,
   MessageCircle,
+  Play,
   Send,
-  Twitter,
-  Youtube,
+  UserRound,
 } from "lucide-react";
 import type { SocialType } from "./types";
 
@@ -18,18 +18,18 @@ export function socialIcon(type: string, size = 16): ReactNode {
     case "telegram":
       return <Send {...props} />;
     case "github":
-      return <Github {...props} />;
+      return <Code2 {...props} />;
     case "twitter":
     case "x":
-      return <Twitter {...props} />;
+      return <AtSign {...props} />;
     case "discord":
       return <MessageCircle {...props} />;
     case "youtube":
-      return <Youtube {...props} />;
+      return <Play {...props} />;
     case "instagram":
-      return <Instagram {...props} />;
+      return <Camera {...props} />;
     case "linkedin":
-      return <Linkedin {...props} />;
+      return <UserRound {...props} />;
     case "website":
       return <Globe {...props} />;
     default:

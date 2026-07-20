@@ -1,8 +1,10 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
+import type { ReactNode } from "react";
 import {
   BadgeCheck,
+  BookOpen,
   CalendarDays,
   FileCode2,
   LayoutTemplate,
@@ -21,6 +23,28 @@ import { absoluteUrl } from "@/lib/site";
 import { getConsoleSignupUrl } from "@/lib/session";
 
 type Params = Promise<{ username: string }>;
+type SearchParams = Promise<{
+  tab?: string | string[];
+  bots?: string | string[];
+}>;
+
+type ProfileTab = "overview" | "bots";
+
+function firstParam(value: string | string[] | undefined): string | undefined {
+  if (Array.isArray(value)) return value[0];
+  return value;
+}
+
+/** GitHub-style tabs: `?tab=bots` (also accepts bare `?bots`). */
+function resolveProfileTab(sp: {
+  tab?: string | string[];
+  bots?: string | string[];
+}): ProfileTab {
+  if (sp.bots !== undefined) return "bots";
+  const tab = (firstParam(sp.tab) || "").toLowerCase();
+  if (tab === "bots" || tab === "repositories" || tab === "repos") return "bots";
+  return "overview";
+}
 
 function plainBioPreview(bio: string | null | undefined): string {
   return (bio || "")
@@ -33,16 +57,27 @@ function plainBioPreview(bio: string | null | undefined): string {
     .trim();
 }
 
-export async function generateMetadata({ params }: { params: Params }): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+  searchParams,
+}: {
+  params: Params;
+  searchParams: SearchParams;
+}): Promise<Metadata> {
   const { username } = await params;
+  const sp = await searchParams;
+  const tab = resolveProfileTab(sp);
   const resolved = resolveUsername(username);
   try {
     const user = await getPublicProfile(resolved);
-    const title = `${user.profile.name} (@${user.profile.username})`;
+    const baseTitle = `${user.profile.name} (@${user.profile.username})`;
+    const title = tab === "bots" ? `Bots · ${baseTitle}` : baseTitle;
     const rawBio = plainBioPreview(user.profile.bio);
     const description =
-      rawBio.slice(0, 155) ||
-      `${user.profile.name} on TeleDevs. @${user.profile.username} · ${user.stats.published_bots} published bots.`;
+      tab === "bots"
+        ? `Published bots by @${user.profile.username} on TeleDevs. ${user.stats.published_bots} listings.`
+        : rawBio.slice(0, 155) ||
+          `${user.profile.name} on TeleDevs. @${user.profile.username} · ${user.stats.published_bots} published bots.`;
     return pageMetadata({
       title,
       description,
@@ -54,6 +89,8 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
         "Telegram bot developer",
       ],
       images: user.profile.avatar ? [user.profile.avatar] : undefined,
+      // Bots tab is a view of the same profile; keep a single canonical URL.
+      index: tab === "overview",
     });
   } catch {
     return { title: `@${resolved}`, robots: { index: false, follow: true } };
@@ -62,8 +99,16 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
 
 export const revalidate = 60;
 
-export default async function ProfilePage({ params }: { params: Params }) {
+export default async function ProfilePage({
+  params,
+  searchParams,
+}: {
+  params: Params;
+  searchParams: SearchParams;
+}) {
   const { username: raw } = await params;
+  const sp = await searchParams;
+  const tab = resolveProfileTab(sp);
   const resolved = resolveUsername(raw);
 
   let user;
@@ -84,13 +129,16 @@ export default async function ProfilePage({ params }: { params: Params }) {
   const bots = botsPayload.published_bots;
   const hasBots = bots.length > 0;
   const bio = (user.profile.bio || "").trim();
-  const profileUrl = absoluteUrl(`/${user.profile.username}`);
+  const username = user.profile.username;
+  const profileUrl = absoluteUrl(`/${username}`);
+  const overviewHref = `/${username}`;
+  const botsHref = `/${username}?tab=bots`;
 
   const personLd = {
     "@context": "https://schema.org",
     "@type": "Person",
     name: user.profile.name,
-    alternateName: user.profile.username,
+    alternateName: username,
     url: profileUrl,
     image: user.profile.avatar || undefined,
     description: plainBioPreview(bio) || undefined,
@@ -102,11 +150,11 @@ export default async function ProfilePage({ params }: { params: Params }) {
     "@context": "https://schema.org",
     "@type": "ProfilePage",
     url: profileUrl,
-    name: `${user.profile.name} (@${user.profile.username})`,
+    name: `${user.profile.name} (@${username})`,
     mainEntity: {
       "@type": "Person",
       name: user.profile.name,
-      alternateName: `@${user.profile.username}`,
+      alternateName: `@${username}`,
     },
   };
 
@@ -126,7 +174,7 @@ export default async function ProfilePage({ params }: { params: Params }) {
               />
             ) : (
               <div className="grid h-20 w-20 shrink-0 place-items-center rounded-full border border-border bg-canvas-subtle text-2xl font-semibold text-muted sm:h-24 sm:w-24 lg:h-[260px] lg:w-[260px] lg:text-5xl">
-                {initials(user.profile.name || user.profile.username)}
+                {initials(user.profile.name || username)}
               </div>
             )}
 
@@ -137,25 +185,27 @@ export default async function ProfilePage({ params }: { params: Params }) {
                   <BadgeCheck size={20} className="text-accent" aria-label="Verified" />
                 ) : null}
               </h1>
-              <p className="text-lg font-light text-muted">@{user.profile.username}</p>
+              <p className="text-lg font-light text-muted">@{username}</p>
             </div>
           </div>
 
           <div className="mt-4 space-y-3 lg:mt-3">
-            <a
-              href={getConsoleSignupUrl()}
-              className="btn w-full justify-center"
-            >
+            <a href={getConsoleSignupUrl()} className="btn w-full justify-center">
               Join TeleBotHost
             </a>
 
             <ul className="space-y-2 text-sm">
-              <li className="flex items-center gap-2 text-muted">
-                <FileCode2 size={16} className="shrink-0" />
-                <span>
-                  <span className="font-semibold text-fg">{user.stats.published_bots}</span>{" "}
-                  published
-                </span>
+              <li>
+                <Link
+                  href={botsHref}
+                  className="flex items-center gap-2 text-muted hover:text-accent"
+                >
+                  <FileCode2 size={16} className="shrink-0" />
+                  <span>
+                    <span className="font-semibold text-fg">{user.stats.published_bots}</span>{" "}
+                    published
+                  </span>
+                </Link>
               </li>
               <li className="flex items-center gap-2 text-muted">
                 <LayoutTemplate size={16} className="shrink-0" />
@@ -202,64 +252,117 @@ export default async function ProfilePage({ params }: { params: Params }) {
           </div>
         </aside>
 
-        <div className="min-w-0 space-y-6">
-          <section className="box overflow-hidden">
-            <div className="flex items-center justify-between gap-3 border-b border-border bg-canvas-subtle/50 px-4 py-2.5">
-              <p className="truncate font-mono text-xs text-muted sm:text-sm">
-                <span className="text-fg">{user.profile.username}</span>
-                <span className="mx-1 text-muted">/</span>
-                README.md
-              </p>
-              <span className="label shrink-0">Overview</span>
-            </div>
-            {bio ? (
-              <MarkdownView content={bio} className="px-4 py-5 sm:px-6" />
-            ) : (
-              <div className="px-4 py-10 text-center sm:px-6">
-                <p className="font-medium text-fg">No README yet</p>
-                <p className="mt-1 text-sm text-muted">
-                  This developer hasn&apos;t written a public bio.
+        <div className="min-w-0 space-y-4">
+          <nav
+            className="-mx-1 flex gap-1 overflow-x-auto border-b border-border px-1"
+            aria-label="Profile tabs"
+          >
+            <TabLink href={overviewHref} active={tab === "overview"} icon={<BookOpen size={16} />}>
+              Overview
+            </TabLink>
+            <TabLink href={botsHref} active={tab === "bots"} icon={<FileCode2 size={16} />} count={bots.length}>
+              Bots
+            </TabLink>
+          </nav>
+
+          {tab === "overview" ? (
+            <section className="box overflow-hidden">
+              <div className="flex items-center justify-between gap-3 border-b border-border bg-canvas-subtle/50 px-4 py-2.5">
+                <p className="truncate font-mono text-xs text-muted sm:text-sm">
+                  <span className="text-fg">{username}</span>
+                  <span className="mx-1 text-muted">/</span>
+                  README.md
                 </p>
               </div>
-            )}
-          </section>
-
-          <section>
-            <div className="mb-3 flex items-end justify-between gap-3 border-b border-border pb-2">
-              <div>
-                <h2 className="text-base font-semibold">Published bots</h2>
-                <p className="text-xs text-muted">
-                  Templates and community store listings from this developer.
-                </p>
-              </div>
-              <span className="label">{bots.length}</span>
-            </div>
-
-            <div className="box overflow-hidden">
-              {hasBots ? (
-                bots.map((bot) => (
-                  <PublishedBotCard
-                    key={bot.bot_id}
-                    bot={bot}
-                    username={user.profile.username}
-                  />
-                ))
+              {bio ? (
+                <MarkdownView content={bio} className="px-4 py-5 sm:px-6" />
               ) : (
-                <div className="space-y-2 px-5 py-10 text-center">
-                  <p className="font-medium text-fg">No published bots yet</p>
-                  <p className="mx-auto max-w-md text-sm text-muted">
-                    This profile is public. Bots stay private until the developer publishes a
-                    template or store listing.
+                <div className="px-4 py-10 text-center sm:px-6">
+                  <p className="font-medium text-fg">No README yet</p>
+                  <p className="mt-1 text-sm text-muted">
+                    This developer hasn&apos;t written a public bio.
                   </p>
-                  <Link href="/explore" className="btn btn-sm mt-2 inline-flex">
-                    Browse community
-                  </Link>
                 </div>
               )}
-            </div>
-          </section>
+              {hasBots ? (
+                <div className="flex items-center justify-between gap-3 border-t border-border px-4 py-3 text-sm">
+                  <p className="text-muted">
+                    <span className="font-semibold text-fg">{bots.length}</span> published bots
+                  </p>
+                  <Link href={botsHref} className="text-accent hover:underline">
+                    View bots
+                  </Link>
+                </div>
+              ) : null}
+            </section>
+          ) : (
+            <section>
+              <div className="mb-3 flex items-end justify-between gap-3">
+                <div>
+                  <h2 className="text-base font-semibold">Published bots</h2>
+                  <p className="text-xs text-muted">
+                    Templates and community store listings from this developer.
+                  </p>
+                </div>
+                <span className="label">{bots.length}</span>
+              </div>
+
+              <div className="box overflow-hidden">
+                {hasBots ? (
+                  bots.map((bot) => (
+                    <PublishedBotCard key={bot.bot_id} bot={bot} username={username} />
+                  ))
+                ) : (
+                  <div className="space-y-2 px-5 py-10 text-center">
+                    <p className="font-medium text-fg">No published bots yet</p>
+                    <p className="mx-auto max-w-md text-sm text-muted">
+                      This profile is public. Bots stay private until the developer publishes a
+                      template or store listing.
+                    </p>
+                    <Link href="/explore" className="btn btn-sm mt-2 inline-flex">
+                      Browse community
+                    </Link>
+                  </div>
+                )}
+              </div>
+            </section>
+          )}
         </div>
       </div>
     </div>
+  );
+}
+
+function TabLink({
+  href,
+  active,
+  icon,
+  count,
+  children,
+}: {
+  href: string;
+  active: boolean;
+  icon: ReactNode;
+  count?: number;
+  children: ReactNode;
+}) {
+  return (
+    <Link
+      href={href}
+      className={`inline-flex shrink-0 items-center gap-1.5 border-b-2 px-3 py-2.5 text-sm font-medium transition-colors ${
+        active
+          ? "border-accent text-fg"
+          : "border-transparent text-muted hover:border-border hover:text-fg"
+      }`}
+      aria-current={active ? "page" : undefined}
+    >
+      <span className={active ? "text-fg" : "text-muted"}>{icon}</span>
+      {children}
+      {typeof count === "number" ? (
+        <span className="rounded-full bg-canvas-subtle px-1.5 py-0.5 text-[11px] font-semibold text-muted">
+          {count}
+        </span>
+      ) : null}
+    </Link>
   );
 }
