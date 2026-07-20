@@ -53,22 +53,20 @@ export function LoginClient({
   function onContinue() {
     setBusy("continue");
     rememberNext();
-    const returnTo = `/login?next=${encodeURIComponent(nextPath || "/")}`;
-    continueWithTelebothost(returnTo);
+    // Hand back to the real destination — avoids nested /login?next=… return URLs
+    continueWithTelebothost(nextPath || "/");
   }
 
   function onSwitch() {
     setBusy("switch");
     rememberNext();
-    const returnTo = `/login?next=${encodeURIComponent(nextPath || "/")}`;
-    switchTelebothostAccount(returnTo);
+    switchTelebothostAccount(nextPath || "/");
   }
 
   function onAdd() {
     setBusy("add");
     rememberNext();
-    const returnTo = `/login?next=${encodeURIComponent(nextPath || "/")}`;
-    addTelebothostAccount(returnTo);
+    addTelebothostAccount(nextPath || "/");
   }
 
   function onUseCurrent() {
@@ -76,12 +74,15 @@ export function LoginClient({
   }
 
   function onActivate(item: CurrentAccount) {
-    const id = item.id;
-    setBusy(id || item.username);
+    setBusy(item.id || item.username);
     rememberNext();
-    const returnTo = `/login?next=${encodeURIComponent(nextPath || "/")}`;
-    if (id) {
-      activateTelebothostAccount(id, returnTo);
+    // Return straight to the destination after handoff (not back through /login)
+    const returnTo = nextPath || "/";
+    if (item.id || item.userId || item.username) {
+      activateTelebothostAccount(item.id || "", returnTo, {
+        userId: item.userId,
+        username: item.username,
+      });
       return;
     }
     switchTelebothostAccount(returnTo);

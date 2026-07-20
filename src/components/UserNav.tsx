@@ -97,13 +97,15 @@ export function UserNav({
 
   function onActivate(item: CurrentAccount) {
     setOpen(false);
-    const id = item.id;
-    if (id) {
-      activateTelebothostAccount(id, window.location.pathname + window.location.search);
+    const returnPath = window.location.pathname + window.location.search;
+    if (item.id || item.userId || item.username) {
+      activateTelebothostAccount(item.id || "", returnPath, {
+        userId: item.userId,
+        username: item.username,
+      });
       return;
     }
-    // No id available — open console picker
-    switchTelebothostAccount(window.location.pathname + window.location.search);
+    switchTelebothostAccount(returnPath);
   }
 
   function onPickOther() {

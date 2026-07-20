@@ -89,7 +89,11 @@ function parseHandoffPayload(raw: string): SessionSnapshot {
       const accounts = Array.isArray(data.accounts)
         ? (data.accounts.map((item) => normalizeAccount(item)).filter(Boolean) as CurrentAccount[])
         : [];
-      const account = normalizeAccount(data.account) || accounts[0] || null;
+      // Explicit null = signed out (do not fall back to accounts[0])
+      const account =
+        data.account === null
+          ? null
+          : normalizeAccount(data.account) || (data.account === undefined ? accounts[0] || null : null);
       return { account, accounts: dedupeAccounts(account, accounts) };
     }
     const account = normalizeAccount(data as Partial<CurrentAccount>);
@@ -278,9 +282,9 @@ export function continueWithTelebothost(returnPath = "/"): void {
 
 /**
  * Open console saved-account picker (not a blank add form).
+ * Keeps the current TeleDevs session until a new handoff arrives.
  */
 export function switchTelebothostAccount(returnPath = "/"): void {
-  writeCurrentAccountCookie(null);
   openBridge(returnPath, { switch: "1" });
 }
 
@@ -290,9 +294,17 @@ export function addTelebothostAccount(returnPath = "/"): void {
 }
 
 /** Switch to a saved console account by id (no login form). */
-export function activateTelebothostAccount(accountId: string, returnPath = "/"): void {
-  if (!accountId) return;
-  openBridge(returnPath, { activate: accountId });
+export function activateTelebothostAccount(
+  accountId: string,
+  returnPath = "/",
+  opts?: { userId?: string | null; username?: string | null },
+): void {
+  const params: Record<string, string> = {};
+  if (accountId) params.activate = accountId;
+  if (opts?.userId) params.userId = String(opts.userId);
+  if (opts?.username) params.username = String(opts.username).replace(/^@/, "");
+  if (!params.activate && !params.userId && !params.username) return;
+  openBridge(returnPath, params);
 }
 
 export function signOutTeledevs(): void {
@@ -358,6 +370,15 @@ export function consumeAccountHandoffFromHash(): SessionSnapshot | undefined {
     window.history.replaceState(null, "", clean);
   } catch {
     /* ignore */
+  }
+
+  // Empty hash = console had no active session. Clear active user only;
+  // keep the saved-account list so switch UI still works.
+  if (!raw) {
+    const kept = getSavedAccountsFromDocument();
+    writeCurrentAccountCookie(null);
+    writeSavedAccountsCookie(kept);
+    return { account: null, accounts: kept };
   }
 
   const snapshot = parseHandoffPayload(raw);
