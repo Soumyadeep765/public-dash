@@ -1,36 +1,57 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# TeleBotHost Explore
 
-## Getting Started
+Public showcase for [TeleBotHost](https://telebothost.com) developers and bots.
 
-First, run the development server:
+## Features
+
+- Browse community store and templates
+- Developer profiles and bot source views
+- Light and dark themes
+
+## Production
+
+| App | URL |
+|-----|-----|
+| Explore | https://teledevs.me |
+| Console | https://console.telebothost.com |
+| API | https://api.telebothost.com/api/v1 |
+
+Required env (also in Vercel project settings):
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+NEXT_PUBLIC_TBH_API_BASE=https://api.telebothost.com/api/v1
+NEXT_PUBLIC_SITE_URL=https://teledevs.me
+NEXT_PUBLIC_CONSOLE_URL=https://console.telebothost.com
+NEXT_PUBLIC_MAIN_SITE_URL=https://telebothost.com
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Point the `teledevs.me` domain at this Next.js deployment. Console must serve `/explore-bridge` so signed-in account hints work across domains.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Develop
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm install
+npm run dev
+```
 
-## Learn More
+For local console session bridge, override:
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+NEXT_PUBLIC_SITE_URL=http://localhost:3000
+NEXT_PUBLIC_CONSOLE_URL=http://localhost:3030
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Routes
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+| Path | Description |
+|------|-------------|
+| `/` | Home |
+| `/about` | About Explore |
+| `/how-it-works` | Publish flow |
+| `/faq` | FAQ |
+| `/upgrade` | Plans |
+| `/explore` | Community store |
+| `/templates` | Public templates |
+| `/[username]` | Developer profile |
+| `/[username]/b/[botId]` | Bot source view |
+| `/search` | Search |

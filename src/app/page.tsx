@@ -1,65 +1,154 @@
-import Image from "next/image";
+import Link from "next/link";
+import type { Metadata } from "next";
+import type { ReactNode } from "react";
+import { BookOpen, Code2, FolderGit2, KeyRound } from "lucide-react";
+import { StoreBotCard } from "@/components/StoreBotCard";
+import { HomeSignedInBanner } from "@/components/HomeSignedIn";
+import { JsonLd } from "@/components/repo/JsonLd";
+import { TbhLogo } from "@/components/TbhLogo";
+import { listStoreBots } from "@/lib/api";
+import { pageMetadata, SITE_NAME } from "@/lib/seo";
+import { absoluteUrl } from "@/lib/site";
+import { getConsoleSignupUrl } from "@/lib/session";
 
-export default function Home() {
+export const revalidate = 60;
+
+export const metadata: Metadata = {
+  ...pageMetadata({
+    title: "Public Telegram bots & developers",
+    description:
+      "Discover public TeleBotHost developers and published Telegram bots. Browse README docs, command source, and community store listings.",
+    path: "/",
+    keywords: ["Telegram bot showcase", "public bot repository"],
+  }),
+  title: {
+    absolute: `${SITE_NAME} · Public Telegram bots & developers`,
+  },
+};
+
+export default async function HomePage() {
+  const store = await listStoreBots({ limit: 6 }).catch(() => ({
+    bots: [],
+    pagination: { page: 1, limit: 6, total: 0 },
+  }));
+
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    name: SITE_NAME,
+    description:
+      "Public TeleBotHost developers, bot templates, and community store listings.",
+    url: absoluteUrl("/"),
+    isPartOf: {
+      "@type": "WebSite",
+      name: SITE_NAME,
+      url: absoluteUrl("/"),
+    },
+  };
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
+    <div className="shell space-y-10">
+      <JsonLd data={jsonLd} />
+      <HomeSignedInBanner />
+
+      <section className="border-b border-border pb-10">
+        <div className="mx-auto max-w-2xl text-center">
+          <div className="mb-5 flex justify-center text-fg">
+            <TbhLogo className="h-12 w-12" />
+          </div>
+          <h1 className="text-4xl font-semibold tracking-tight sm:text-5xl">
+            Find bots worth sharing
           </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+          <p className="mx-auto mt-4 max-w-xl text-base text-muted">
+            Explore is the public side of TeleBotHost. Open a developer profile, read the README,
+            and browse command source like a repo. Official product. Same platform you already use
+            to host bots.
+          </p>
+          <div className="mt-6 flex flex-wrap items-center justify-center gap-2">
+            <Link href="/explore" className="btn btn-primary">
+              Explore bots
+            </Link>
+            <a href={getConsoleSignupUrl()} className="btn">
+              Get started
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <section className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        <Feature
+          icon={<FolderGit2 size={16} />}
+          title="Repo-style bots"
+          body="Each published bot opens with a file tree and shareable paths."
+        />
+        <Feature
+          icon={<Code2 size={16} />}
+          title="Commands as .js"
+          body="Command files you can open, link, and copy from."
+        />
+        <Feature
+          icon={<KeyRound size={16} />}
+          title=".env placeholders"
+          body="Env names and placeholders only. Secrets stay private."
+        />
+        <Feature
+          icon={<BookOpen size={16} />}
+          title="README first"
+          body="Docs render on the bot page so visitors get the story fast."
+        />
+      </section>
+
+      <section className="space-y-3">
+        <div className="flex items-center justify-between gap-3">
+          <div>
+            <h2 className="text-xl font-semibold">From the community store</h2>
+            <p className="text-sm text-muted">Published listings you can open and share</p>
+          </div>
+          <Link href="/explore" className="text-sm text-accent hover:underline">
+            View all
+          </Link>
+        </div>
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          {store.bots.map((bot) => (
+            <StoreBotCard key={bot._id} bot={bot} />
+          ))}
+        </div>
+      </section>
+
+      <section className="box flex flex-col items-start gap-3 p-5 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h3 className="font-semibold">Build on TeleBotHost</h3>
+          <p className="text-sm text-muted">
+            Host bots in the console, publish when you are ready, and share the Explore link.
           </p>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
+        <div className="flex flex-wrap gap-2">
+          <a href={getConsoleSignupUrl()} className="btn btn-primary">
+            Create account
           </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+          <Link href="/how-it-works" className="btn">
+            How it works
+          </Link>
         </div>
-      </main>
+      </section>
+    </div>
+  );
+}
+
+function Feature({
+  icon,
+  title,
+  body,
+}: {
+  icon: ReactNode;
+  title: string;
+  body: string;
+}) {
+  return (
+    <div className="box p-4">
+      <div className="mb-2 text-muted">{icon}</div>
+      <h3 className="font-semibold">{title}</h3>
+      <p className="mt-1 text-sm text-muted">{body}</p>
     </div>
   );
 }
