@@ -24,7 +24,7 @@ export function Header() {
         return;
       }
       e.preventDefault();
-      document.querySelector<HTMLInputElement>('header input[type="search"]')?.focus();
+      window.dispatchEvent(new Event("tbh-open-search"));
     }
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
@@ -32,7 +32,7 @@ export function Header() {
 
   return (
     <header className="sticky top-0 z-40 border-b border-border bg-header">
-      <div className="shell flex h-14 items-center gap-3">
+      <div className="shell flex h-14 items-center gap-2 sm:gap-3">
         <BrandMark />
 
         <nav className="hidden items-center gap-1 text-sm font-medium text-fg md:flex">
@@ -44,11 +44,10 @@ export function Header() {
           </Link>
         </nav>
 
-        <div className="mx-auto w-full max-w-[360px] flex-1 md:mx-0">
-          <HeaderSearch />
-        </div>
-
-        <div className="ml-auto flex items-center gap-1.5">
+        <div className="ml-auto flex min-w-0 flex-1 items-center justify-end gap-1 sm:gap-1.5">
+          <div className="contents md:mr-auto md:block md:w-full md:max-w-[360px] md:flex-1">
+            <HeaderSearch />
+          </div>
           <ThemeToggle />
           <UserNav
             account={account}
