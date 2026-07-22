@@ -13,6 +13,7 @@ import {
 } from "@/lib/seo";
 import { getSiteUrl } from "@/lib/site";
 import "./globals.css";
+import "katex/dist/katex.min.css";
 
 const sans = Source_Sans_3({
   variable: "--font-sans-ui",

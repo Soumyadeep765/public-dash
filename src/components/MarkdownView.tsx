@@ -1,8 +1,10 @@
 import type { Components } from "react-markdown";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import remarkMath from "remark-math";
 import rehypeRaw from "rehype-raw";
 import rehypeSanitize from "rehype-sanitize";
+import rehypeKatex from "rehype-katex";
 import { highlightCode } from "@/lib/highlight";
 import {
   isBadgeImage,
@@ -85,11 +87,12 @@ export function MarkdownView({
   return (
     <div className={`markdown-body ${className}`.trim()}>
       <ReactMarkdown
-        remarkPlugins={[remarkGfm]}
+        remarkPlugins={[remarkGfm, remarkMath]}
         rehypePlugins={[
           rehypeRaw,
           rehypeBadgeRows,
           [rehypeSanitize, markdownSanitizeSchema],
+          rehypeKatex,
         ]}
         components={components}
       >
