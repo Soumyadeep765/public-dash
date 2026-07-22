@@ -92,8 +92,19 @@ export function Footer() {
         </div>
       </div>
 
-      <div className="shell mt-8 border-t border-border pt-4 text-xs">
+      <div className="shell mt-8 border-t border-border pt-4 text-xs flex flex-col gap-2 sm:flex-row sm:justify-between sm:items-center">
         <p>© {new Date().getFullYear()} TeleBotHost. TeleDevs is an official product.</p>
+        <p>
+          Powered by{" "}
+          <a
+            href="https://github.com/Soumyadeep765/public-dash"
+            target="_blank"
+            rel="noreferrer"
+            className="font-medium hover:text-fg hover:underline"
+          >
+            public-dash
+          </a>
+        </p>
       </div>
     </footer>
   );
