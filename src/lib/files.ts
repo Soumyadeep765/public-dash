@@ -13,6 +13,9 @@ const KNOWN_EXTENSIONS = new Set([
   "txt",
   "yaml",
   "yml",
+  "css",
+  "html",
+  "xml",
 ]);
 
 /** Match TeleBotHost ZIP export naming (download.js) */
@@ -57,6 +60,12 @@ export function languageFromFileName(fileName: string): string {
     case "yaml":
     case "yml":
       return "yaml";
+    case "css":
+      return "css";
+    case "html":
+      return "html";
+    case "xml":
+      return "xml";
     default:
       return "text";
   }

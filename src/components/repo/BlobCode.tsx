@@ -76,10 +76,16 @@ export function BlobCode({
         <div className="min-w-0">
           <p className="truncate font-mono text-xs text-fg">{fileName}</p>
           <p className="text-xs text-muted">
-            {language || "text"} · {lines.length} lines · click line # to share
+            {language || "text"} · {lines.length} lines
           </p>
         </div>
         <div className="flex gap-1.5">
+          <a
+            href={blobPath.replace("/blob/", "/raw/")}
+            className="btn btn-sm"
+          >
+            Raw
+          </a>
           <button
             type="button"
             className="btn btn-sm"

@@ -123,6 +123,10 @@ export function repoBlobUrl(basePath: string, filePath: string, line?: number): 
   return line ? `${url}#L${line}` : url;
 }
 
+export function repoRawUrl(basePath: string, filePath: string): string {
+  return `${basePath}/raw/${encodeRepoPath(filePath)}`;
+}
+
 export function encodeRepoPath(path: string): string {
   return path
     .split("/")

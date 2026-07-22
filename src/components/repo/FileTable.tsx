@@ -98,7 +98,7 @@ export function FileTable({
                     </span>
                   </span>
                 </span>
-                <span className="hidden text-right text-xs text-muted sm:block">
+                <span className="text-right text-xs text-muted">
                   {stamp ? timeAgo(stamp) : "—"}
                 </span>
               </Link>

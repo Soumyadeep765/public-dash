@@ -123,7 +123,7 @@ export default async function BotRepoByIdPage({ params }: { params: Params }) {
             <section className="box overflow-hidden">
               <div className="flex items-center justify-between border-b border-border bg-canvas-subtle px-3 py-2">
                 <h2 className="text-sm font-semibold">README.md</h2>
-                <a href={`${basePath}/blob/README.md`} className="text-xs text-accent hover:underline">
+                <a href={`${basePath}/raw/README.md`} className="text-xs text-accent hover:underline">
                   View raw file
                 </a>
               </div>
