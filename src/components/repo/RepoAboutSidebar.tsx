@@ -1,11 +1,10 @@
 import Link from "next/link";
-import { ExternalLink, FileCode2, KeyRound, Sparkles, Terminal } from "lucide-react";
+import { ExternalLink, FileCode2, KeyRound, Terminal } from "lucide-react";
 import type { PublishedBotDetail } from "@/lib/types";
 import { formatDate, timeAgo } from "@/lib/format";
 import { resolveListingBlurb } from "@/lib/botCopy";
 import { getConsoleBaseUrl } from "@/lib/session";
 import { ForkBotButton } from "@/components/repo/ForkBotButton";
-import { AiCatalogMeta } from "@/components/AiCatalogMeta";
 import { AiBlurbMark } from "@/components/AiBlurbMark";
 
 export function RepoAboutSidebar({
@@ -30,16 +29,6 @@ export function RepoAboutSidebar({
           {blurb.fromAi ? <AiBlurbMark className="mr-1.5 align-middle" /> : null}
           {blurb.text}
         </p>
-
-        {(bot.ai_category || (bot.ai_tags && bot.ai_tags.length > 0)) ? (
-          <div className="space-y-1.5">
-            <p className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-muted">
-              <Sparkles size={12} />
-              AI catalog
-            </p>
-            <AiCatalogMeta category={bot.ai_category} tags={bot.ai_tags} maxTags={8} />
-          </div>
-        ) : null}
 
         {bot.listing_type_label ? (
           <p>
