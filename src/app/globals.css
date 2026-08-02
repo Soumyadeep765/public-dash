@@ -381,8 +381,20 @@ a.link:hover {
   padding-left: 2em;
 }
 
+.markdown-body ul {
+  list-style: disc;
+}
+
+.markdown-body ol {
+  list-style: decimal;
+}
+
+.markdown-body li {
+  display: list-item;
+}
+
 .markdown-body li + li {
-  margin-top: 0.25em;
+  margin-top: 0.35em;
 }
 
 .markdown-body ul.contains-task-list,
@@ -411,9 +423,8 @@ a.link:hover {
   background: transparent;
 }
 
-/* Drop empty blocks that show up as large blank gaps */
-.markdown-body p:empty,
-.markdown-body li:empty {
+/* Drop empty paragraphs that show up as large blank gaps */
+.markdown-body p:empty {
   display: none;
 }
 

@@ -80,10 +80,19 @@ const components: Components = {
 
 /** Normalize common README quirks before parse. */
 function preprocessMarkdown(source: string): string {
+  let text = String(source || "").replace(/\r\n/g, "\n");
+
   // Collapse 3+ blank lines so parsers don't leave empty gap blocks
-  return String(source || "")
-    .replace(/\r\n/g, "\n")
-    .replace(/\n{3,}/g, "\n\n");
+  text = text.replace(/\n{3,}/g, "\n\n");
+
+  // Blank lines between sibling bullets make "loose" lists (extra gaps).
+  // Keep item continuations; only remove empty lines between list markers.
+  text = text.replace(
+    /^([ \t]*(?:[-*+]|\d+\.))[ \t]+[^\n]+\n(?:[ \t]+[^\n]+\n)*\n(?=[ \t]*(?:[-*+]|\d+\.)[ \t])/gm,
+    (block) => block.replace(/\n$/, ""),
+  );
+
+  return text;
 }
 
 export function MarkdownView({
