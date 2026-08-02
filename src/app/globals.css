@@ -318,21 +318,21 @@ a.link:hover {
 .markdown-body h4,
 .markdown-body h5,
 .markdown-body h6 {
-  margin: 24px 0 16px;
+  margin: 1.25em 0 0.5em;
   font-weight: 600;
   line-height: 1.25;
+  /* No border-bottom — authors often also add `---` which stacked a second line */
+  border-bottom: 0;
+  padding-bottom: 0;
 }
 
 .markdown-body h1 {
   font-size: 2em;
-  padding-bottom: 0.3em;
-  border-bottom: 1px solid var(--border-muted);
+  margin-top: 0;
 }
 
 .markdown-body h2 {
   font-size: 1.5em;
-  padding-bottom: 0.3em;
-  border-bottom: 1px solid var(--border-muted);
 }
 
 .markdown-body h3 {
@@ -349,10 +349,31 @@ a.link:hover {
   color: var(--fg-muted);
 }
 
+/* Keep lists tight under headings (avoids a big empty band) */
+.markdown-body h1 + ul,
+.markdown-body h2 + ul,
+.markdown-body h3 + ul,
+.markdown-body h1 + ol,
+.markdown-body h2 + ol,
+.markdown-body h3 + ol,
+.markdown-body h1 + p,
+.markdown-body h2 + p,
+.markdown-body h3 + p {
+  margin-top: 0;
+}
+
 .markdown-body p,
 .markdown-body ul,
 .markdown-body ol {
   margin: 0 0 16px;
+}
+
+.markdown-body li > p {
+  margin: 0 0 0.5em;
+}
+
+.markdown-body li > p:last-child {
+  margin-bottom: 0;
 }
 
 .markdown-body ul,
@@ -384,9 +405,15 @@ a.link:hover {
 .markdown-body hr {
   height: 1px;
   padding: 0;
-  margin: 24px 0;
+  margin: 16px 0;
   border: 0;
   background: var(--border);
+}
+
+/* Drop empty blocks that show up as large blank gaps */
+.markdown-body p:empty,
+.markdown-body li:empty {
+  display: none;
 }
 
 .markdown-body details {
