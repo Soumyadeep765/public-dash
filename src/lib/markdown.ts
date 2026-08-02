@@ -68,7 +68,7 @@ function collectBadgeNodes(paragraphs: Element[]): ElementContent[] {
   return out;
 }
 
-function isHeading(node: ElementContent | undefined): boolean {
+function isHeading(node: ElementContent | null | undefined): boolean {
   return Boolean(isElement(node) && /^h[1-6]$/.test(node.tagName));
 }
 
