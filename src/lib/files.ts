@@ -159,12 +159,33 @@ function newestUpdatedAt(nodes: RepoFileNode[]): string | null {
   return best;
 }
 
+/** Body text when the bot has no real README.md content. */
+export function readmeFallbackBody(bot: {
+  name?: string | null;
+  description?: string | null;
+  ai_description?: string | null;
+  bot_username?: string | null;
+}): { markdown: string; fromAi: boolean; hasBody: boolean } {
+  const handle = (bot.bot_username || "").replace(/^@/, "");
+  const ownerDesc = String(bot.description || "").trim();
+  const aiDesc = String(bot.ai_description || "").trim();
+  const body = ownerDesc || aiDesc;
+  const fromAi = !ownerDesc && !!aiDesc;
+  const title = String(bot.name || "Bot").trim() || "Bot";
+
+  const markdown =
+    `# ${title}\n\n` +
+    (body ? `${body}\n\n` : "_No README published yet._\n\n") +
+    (handle ? `Telegram: [@${handle}](https://t.me/${handle})\n` : "");
+
+  return { markdown, fromAi, hasBody: !!body };
+}
+
 export function buildRepoTree(bot: PublishedBotDetail): RepoFileNode[] {
   const botUpdated = toIso(bot.updated_at);
-  const readme =
-    bot.readme?.trim() ||
-    `# ${bot.name}\n\n${bot.description || "No README published yet."}\n\n` +
-      `Telegram: [@${(bot.bot_username || "").replace(/^@/, "")}](https://t.me/${(bot.bot_username || "").replace(/^@/, "")})\n`;
+  const realReadme = bot.readme?.trim() || "";
+  const fallback = readmeFallbackBody(bot);
+  const readme = realReadme || fallback.markdown;
 
   const folderMap = new Map<string, RepoFileNode[]>();
   const rootCommands: RepoFileNode[] = [];

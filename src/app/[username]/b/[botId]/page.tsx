@@ -8,6 +8,7 @@ import { RepoAboutSidebar } from "@/components/repo/RepoAboutSidebar";
 import { AiCatalogCard } from "@/components/repo/AiCatalogCard";
 import { RelatedBots } from "@/components/repo/RelatedBots";
 import { ShareMenu } from "@/components/repo/ShareMenu";
+import { AiBlurbMark } from "@/components/AiBlurbMark";
 import { getRelatedPublicBots } from "@/lib/api";
 import { findRepoFile, flattenUnder } from "@/lib/files";
 import { listDirEntries, loadRepoByIdResult } from "@/lib/repo";
@@ -78,6 +79,11 @@ export default async function BotRepoByIdPage({ params }: { params: Params }) {
   const { bot, owner, handle, tree, basePath } = repo;
   const entries = listDirEntries(tree, "");
   const readme = findRepoFile(tree, "README.md");
+  const hasRealReadme = Boolean(bot.readme?.trim());
+  const readmeFromAi =
+    !hasRealReadme &&
+    !String(bot.description || "").trim() &&
+    Boolean(String(bot.ai_description || "").trim());
 
   let related: Awaited<ReturnType<typeof getRelatedPublicBots>> = [];
   try {
@@ -124,9 +130,12 @@ export default async function BotRepoByIdPage({ params }: { params: Params }) {
 
           {readme ? (
             <section className="box overflow-hidden">
-              <div className="flex items-center justify-between border-b border-border bg-canvas-subtle px-3 py-2">
-                <h2 className="text-sm font-semibold">README.md</h2>
-                <a href={`${basePath}/raw/README.md`} className="text-xs text-accent hover:underline">
+              <div className="flex items-center justify-between gap-2 border-b border-border bg-canvas-subtle px-3 py-2">
+                <h2 className="flex min-w-0 flex-wrap items-center gap-2 text-sm font-semibold">
+                  {hasRealReadme ? "README.md" : "Overview"}
+                  {readmeFromAi ? <AiBlurbMark /> : null}
+                </h2>
+                <a href={`${basePath}/raw/README.md`} className="shrink-0 text-xs text-accent hover:underline">
                   View raw file
                 </a>
               </div>
