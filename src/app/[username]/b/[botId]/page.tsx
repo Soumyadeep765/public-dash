@@ -7,6 +7,7 @@ import { JsonLd } from "@/components/repo/JsonLd";
 import { RepoAboutSidebar } from "@/components/repo/RepoAboutSidebar";
 import { RelatedBots } from "@/components/repo/RelatedBots";
 import { ShareMenu } from "@/components/repo/ShareMenu";
+import { AiCatalogBox } from "@/components/AiCatalogBox";
 import { getRelatedPublicBots } from "@/lib/api";
 import { findRepoFile, flattenUnder } from "@/lib/files";
 import { listDirEntries, loadRepoByIdResult } from "@/lib/repo";
@@ -24,7 +25,7 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
 
   const title = `${repo.bot.name} · @${repo.handle}`;
   const description =
-    (repo.bot.ai_description || repo.bot.description || "").trim().slice(0, 155) ||
+    (repo.bot.description || repo.bot.ai_description || "").trim().slice(0, 155) ||
     `${repo.bot.name} by @${repo.owner} on TeleDevs. Browse README, commands, and .env placeholders.`;
 
   return {
@@ -89,7 +90,7 @@ export default async function BotRepoByIdPage({ params }: { params: Params }) {
     "@context": "https://schema.org",
     "@type": "SoftwareSourceCode",
     name: bot.name,
-    description: bot.ai_description || bot.description || bot.name,
+    description: bot.description || bot.ai_description || bot.name,
     url: absoluteUrl(basePath),
     codeRepository: absoluteUrl(basePath),
     programmingLanguage: "JavaScript",
@@ -136,6 +137,11 @@ export default async function BotRepoByIdPage({ params }: { params: Params }) {
 
         <aside className="space-y-4">
           <RepoAboutSidebar bot={bot} owner={owner} handle={handle} />
+          <AiCatalogBox
+            category={bot.ai_category}
+            description={bot.ai_description}
+            tags={bot.ai_tags}
+          />
           <RelatedBots bots={related} owner={owner} />
         </aside>
       </div>

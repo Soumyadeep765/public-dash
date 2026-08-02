@@ -4,8 +4,8 @@ import { User } from "lucide-react";
 import { searchPublic } from "@/lib/api";
 import { pageMetadata } from "@/lib/seo";
 import { botExplorePath } from "@/lib/repo";
-import { botListingBlurb } from "@/lib/botCopy";
 import { BotPhoto } from "@/components/BotPhoto";
+import { BotDescriptionText } from "@/components/BotDescriptionText";
 import { AiCatalogMeta } from "@/components/AiCatalogMeta";
 
 type SearchParams = Promise<{ q?: string; type?: string }>;
@@ -131,7 +131,6 @@ export default async function SearchPage({ searchParams }: { searchParams: Searc
                   results.bots.map((bot) => {
                     const owner = bot.owner_username || "unknown";
                     const handle = bot.bot_username.replace(/^@/, "");
-                    const blurb = botListingBlurb(bot);
                     return (
                       <Link
                         key={`${bot.bot_id}-${handle}`}
@@ -150,9 +149,13 @@ export default async function SearchPage({ searchParams }: { searchParams: Searc
                             @{handle} · by @{owner}
                             {bot.listing_type_label ? ` · ${bot.listing_type_label}` : ""}
                           </p>
-                          {blurb ? (
-                            <p className="mt-1 line-clamp-2 text-sm text-muted">{blurb}</p>
-                          ) : null}
+                          <div className="mt-1">
+                            <BotDescriptionText
+                              bot={bot}
+                              className="text-sm text-muted"
+                              clampClassName="line-clamp-2"
+                            />
+                          </div>
                           <AiCatalogMeta
                             category={bot.ai_category}
                             tags={bot.ai_tags}

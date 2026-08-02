@@ -3,10 +3,9 @@ import { ExternalLink, Eye, FileCode2, KeyRound } from "lucide-react";
 import type { PublishedBotDetail } from "@/lib/types";
 import { formatDate, timeAgo } from "@/lib/format";
 import { botExplorePath } from "@/lib/repo";
-import { botListingBlurb } from "@/lib/botCopy";
 import { ForkBotButton } from "@/components/repo/ForkBotButton";
 import { BotPhoto } from "@/components/BotPhoto";
-import { AiCatalogMeta } from "@/components/AiCatalogMeta";
+import { BotDescriptionText } from "@/components/BotDescriptionText";
 
 export function BotRepoHeader({
   bot,
@@ -20,7 +19,6 @@ export function BotRepoHeader({
   basePath?: string;
 }) {
   const repoPath = basePath || botExplorePath(owner, bot.bot_id);
-  const blurb = botListingBlurb(bot, bot.name || "Public TeleBotHost bot");
 
   return (
     <div className="space-y-3 border-b border-border pb-4">
@@ -47,13 +45,13 @@ export function BotRepoHeader({
                 <span className="label ml-2">Public</span>
               )}
             </h1>
-            <p className="mt-1 text-sm text-muted">{blurb}</p>
-            <AiCatalogMeta
-              category={bot.ai_category}
-              tags={bot.ai_tags}
-              className="mt-2"
-              maxTags={6}
-            />
+            <div className="mt-1">
+              <BotDescriptionText
+                bot={bot}
+                fallback={bot.name || "Public TeleBotHost bot"}
+                className="text-sm text-muted"
+              />
+            </div>
           </div>
         </div>
 

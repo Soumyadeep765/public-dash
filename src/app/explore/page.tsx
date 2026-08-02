@@ -4,8 +4,8 @@ import { listStoreBots, listTemplates } from "@/lib/api";
 import type { Metadata } from "next";
 import { pageMetadata } from "@/lib/seo";
 import { cleanBotUsername, timeAgo } from "@/lib/format";
-import { botListingBlurb } from "@/lib/botCopy";
 import { BotPhoto } from "@/components/BotPhoto";
+import { BotDescriptionText } from "@/components/BotDescriptionText";
 import { AiCatalogMeta } from "@/components/AiCatalogMeta";
 
 export const metadata: Metadata = pageMetadata({
@@ -135,9 +135,14 @@ export default async function ExplorePage({ searchParams }: { searchParams: Sear
                       <p className="text-sm text-muted">
                         @{username} · by @{owner}
                       </p>
-                      <p className="mt-1 line-clamp-2 text-sm text-muted">
-                        {botListingBlurb(bot, "Open to browse template source.")}
-                      </p>
+                      <div className="mt-1">
+                        <BotDescriptionText
+                          bot={bot}
+                          fallback="Open to browse template source."
+                          className="text-sm text-muted"
+                          clampClassName="line-clamp-2"
+                        />
+                      </div>
                       <AiCatalogMeta
                         category={bot.ai_category}
                         tags={bot.ai_tags}
