@@ -23,7 +23,7 @@ export async function generateMetadata({
   return pageMetadata({
     title: q ? `Search: ${q}` : "Search",
     description:
-      "Search TeleDevs for developers and published Telegram bots.",
+      "Search TeleDevs for developers and published Telegram bots by name, description, or AI catalog tags.",
     path: q ? `/search?q=${encodeURIComponent(q)}` : "/search",
     index: !q,
     follow: true,
@@ -47,7 +47,10 @@ export default async function SearchPage({ searchParams }: { searchParams: Searc
       <div>
         <h1 className="text-2xl font-semibold">Search</h1>
         <p className="mt-1 text-muted">
-          Find developers and published bots by name, description, or AI tags.
+          Find developers and published bots by name, owner description, or AI catalog tags.
+          Search includes published listings even when they are not featured on the main browse
+          feed. An <span className="font-medium text-fg">AI</span> mark means the blurb came from
+          the catalog summary.
         </p>
       </div>
 

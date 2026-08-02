@@ -8,7 +8,7 @@ import { getConsoleBaseUrl } from "@/lib/session";
 export const metadata: Metadata = pageMetadata({
   title: "FAQ",
   description:
-    "Common questions about TeleDevs, publishing bots, privacy, and public profiles.",
+    "Common questions about TeleDevs, AI catalog descriptions, publishing bots, privacy, and public profiles.",
   path: "/faq",
 });
 
@@ -57,6 +57,34 @@ export default function FaqPage() {
             How it works
           </Link>
           .
+        </>
+      ),
+    },
+    {
+      q: "What is the AI catalog description?",
+      plain:
+        "After you publish, TeleDevs analyzes command code and generates a short description, category, and tags. Your own listing or store description is shown first when present. If the AI text is what you see, a small AI mark appears next to it.",
+      a: (
+        <>
+          After you publish, TeleDevs analyzes command code (TBL / JavaScript on TeleBotHost) and
+          generates a short description, category, and tags. Your own listing or store description
+          is shown first when present. If the AI text is what you see, a small{" "}
+          <span className="font-medium text-fg">AI</span> mark appears next to it.
+        </>
+      ),
+    },
+    {
+      q: "Why is my bot missing from the main browse list?",
+      plain:
+        "Browse lists prefer bots that pass catalog quality checks. Search still finds published bots by name, description, or AI tags even when they are not featured on the main feed.",
+      a: (
+        <>
+          Browse lists prefer bots that pass catalog quality checks (for example empty stubs or
+          non-TBL pastes may stay off the main feed).{" "}
+          <Link href="/search" className="link">
+            Search
+          </Link>{" "}
+          still finds published bots by name, description, or AI tags.
         </>
       ),
     },

@@ -7,9 +7,9 @@ import { TemplateBotCard } from "@/components/TemplateBotCard";
 export const metadata: Metadata = pageMetadata({
   title: "Bot templates",
   description:
-    "Browse shareable TeleBotHost bot templates. Open blueprints with README docs, env placeholders, and command source.",
+    "Browse shareable TeleBotHost bot templates with README docs, env placeholders, command source, and AI catalog tags.",
   path: "/templates",
-  keywords: ["Telegram bot templates", "bot blueprints"],
+  keywords: ["Telegram bot templates", "bot blueprints", "AI catalog"],
 });
 
 export const revalidate = 15;
@@ -29,7 +29,9 @@ export default async function TemplatesPage({ searchParams }: { searchParams: Se
     <div className="shell space-y-5">
       <div>
         <h1 className="text-2xl font-semibold">Templates</h1>
-        <p className="mt-1 text-muted">Shareable bot blueprints.</p>
+        <p className="mt-1 text-muted">
+          Shareable bot blueprints with README, source, and AI catalog tags when available.
+        </p>
       </div>
 
       <form className="flex flex-col gap-2 sm:flex-row">

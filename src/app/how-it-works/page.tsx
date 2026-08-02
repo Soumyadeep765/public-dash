@@ -6,7 +6,7 @@ import { getConsoleDashboardUrl, getConsoleSignupUrl } from "@/lib/session";
 export const metadata: Metadata = pageMetadata({
   title: "How it works",
   description:
-    "Learn how TeleBotHost bots move from the console to a public TeleDevs page with README, commands, and shareable links.",
+    "Learn how TeleBotHost bots move from the console to TeleDevs, including AI catalog summaries from command code.",
   path: "/how-it-works",
 });
 
@@ -14,7 +14,7 @@ const steps = [
   {
     n: "1",
     title: "Build in the console",
-    body: "Write commands, env placeholders, and your README in TeleBotHost. That is still the place you edit and run bots.",
+    body: "Write TBL commands (JavaScript with TeleBotHost built-ins), env placeholders, and your README. That is still the place you edit and run bots.",
   },
   {
     n: "2",
@@ -23,13 +23,18 @@ const steps = [
   },
   {
     n: "3",
+    title: "AI catalog fills the gaps",
+    body: "A background pass reads command code and writes a short description, category, and tags. Your owner or store description still shows first when you provide one. An AI mark appears when the AI summary is what visitors see.",
+  },
+  {
+    n: "4",
     title: "Share a stable link",
     body: "Every published bot gets a canonical URL with its bot ID. Username slugs still work when they are unique for that owner.",
   },
   {
-    n: "4",
+    n: "5",
     title: "People browse the source view",
-    body: "Visitors see the file tree, README, .env keys (not secret values), and command files. They can open Telegram or jump back to your profile.",
+    body: "Visitors see the file tree, README, .env keys (not secret values), command files, and catalog tags. They can search by name or AI tags, open Telegram, or jump back to your profile.",
   },
 ];
 
@@ -41,7 +46,7 @@ export default function HowItWorksPage() {
         <h1 className="text-3xl font-semibold tracking-tight">How TeleDevs works</h1>
         <p className="text-base text-muted">
           Short version: you host on TeleBotHost, you choose what goes public, TeleDevs shows it
-          in a repo-style layout.
+          in a repo-style layout with optional AI catalog metadata.
         </p>
       </header>
 
@@ -58,6 +63,15 @@ export default function HowItWorksPage() {
           </li>
         ))}
       </ol>
+
+      <section className="space-y-3">
+        <h2 className="text-xl font-semibold">Browse vs search</h2>
+        <p className="text-muted">
+          Homepages and template browse lists prefer bots that pass catalog quality checks so the
+          main feed stays useful. Search is broader: it can still find published bots by name,
+          username, owner description, or AI description and tags.
+        </p>
+      </section>
 
       <section className="space-y-3">
         <h2 className="text-xl font-semibold">What stays private</h2>

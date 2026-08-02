@@ -8,7 +8,7 @@ import { getConsoleBaseUrl, getConsoleSignupUrl } from "@/lib/session";
 export const metadata: Metadata = pageMetadata({
   title: "About TeleDevs",
   description:
-    "Learn what TeleDevs is, how it connects to the TeleBotHost console, and how public bot profiles work.",
+    "Learn what TeleDevs is, how AI catalog summaries work, and how public TeleBotHost bot profiles appear.",
   path: "/about",
 });
 
@@ -38,6 +38,20 @@ export default function AboutPage() {
         <p className="text-muted">
           We keep the layout familiar on purpose. File trees, blob URLs, and line links make it
           easy to point a teammate at the exact file you mean.
+        </p>
+      </section>
+
+      <section className="space-y-3">
+        <h2 className="text-xl font-semibold">AI catalog</h2>
+        <p className="text-muted">
+          Published bots get an automatic catalog pass that reads command code (TBL / JavaScript
+          on TeleBotHost) and fills a short description, category, and tags. Owner or store text
+          still wins when you write one. When the page shows the AI summary instead, you will see
+          a small <span className="font-medium text-fg">AI</span> mark next to it.
+        </p>
+        <p className="text-muted">
+          Browse lists prefer bots that pass catalog quality checks. Search can still surface
+          more published listings so people can find a bot by name, tags, or AI description.
         </p>
       </section>
 
@@ -72,14 +86,20 @@ export default function AboutPage() {
               api.telebothost.com
             </a>
           </li>
+          <li>
+            TBL docs:{" "}
+            <a href="https://docs.telebothost.com/" className="link" target="_blank" rel="noreferrer">
+              docs.telebothost.com
+            </a>
+          </li>
         </ul>
       </section>
 
       <section className="space-y-3">
         <h2 className="text-xl font-semibold">What you can do here</h2>
         <p className="text-muted">
-          Browse the store, open a developer profile, share a bot URL, or copy a permalink to a
-          line of command code. Signing in is optional.
+          Browse the store, search bots and developers, open a profile, share a bot URL, or copy
+          a permalink to a line of command code. Signing in is optional.
         </p>
       </section>
 

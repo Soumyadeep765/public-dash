@@ -3,10 +3,10 @@ import { absoluteUrl, getSiteUrl } from "./site";
 
 export const SITE_NAME = "TeleDevs";
 export const SITE_TAGLINE =
-  "Browse public TeleBotHost developers, bot templates, and community store listings.";
+  "Browse public TeleBotHost bots with README docs, command source, and AI catalog summaries.";
 
 export const DEFAULT_DESCRIPTION =
-  "TeleDevs is the official public showcase for TeleBotHost. Browse developer profiles, published Telegram bots, README docs, and command source like a repository.";
+  "TeleDevs is the official public showcase for TeleBotHost. Browse developer profiles, published Telegram bots, README docs, command source, and AI-generated catalog descriptions tagged from real TBL code.";
 
 const DEFAULT_KEYWORDS = [
   "TeleDevs",
@@ -18,6 +18,8 @@ const DEFAULT_KEYWORDS = [
   "bot hosting",
   "public bot source",
   "Telegram bot developers",
+  "AI bot catalog",
+  "TBL",
 ];
 
 export function pageMetadata({

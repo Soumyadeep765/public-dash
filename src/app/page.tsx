@@ -1,7 +1,7 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
-import { BookOpen, Code2, FolderGit2, KeyRound } from "lucide-react";
+import { BookOpen, Code2, FolderGit2, KeyRound, Sparkles } from "lucide-react";
 import { StoreBotCard } from "@/components/StoreBotCard";
 import { TemplateBotCard } from "@/components/TemplateBotCard";
 import { HomeSignedInBanner } from "@/components/HomeSignedIn";
@@ -19,9 +19,9 @@ export const metadata: Metadata = {
   ...pageMetadata({
     title: "Public Telegram bots & developers",
     description:
-      "Discover public TeleBotHost developers and published Telegram bots. Browse README docs, command source, and community store listings.",
+      "Discover public TeleBotHost developers and Telegram bots. Browse README docs, command source, community store listings, and AI catalog summaries.",
     path: "/",
-    keywords: ["Telegram bot showcase", "public bot repository"],
+    keywords: ["Telegram bot showcase", "public bot repository", "AI bot catalog"],
   }),
   title: {
     absolute: `${SITE_NAME} · Public Telegram bots & developers`,
@@ -56,7 +56,7 @@ export default async function HomePage() {
     "@type": "CollectionPage",
     name: SITE_NAME,
     description:
-      "Public TeleBotHost developers, bot templates, and community store listings.",
+      "Public TeleBotHost developers, bot templates, community store listings, and AI catalog summaries.",
     url: absoluteUrl("/"),
     isPartOf: {
       "@type": "WebSite",
@@ -79,13 +79,16 @@ export default async function HomePage() {
             TeleDevs
           </h1>
           <p className="mx-auto mt-4 max-w-xl text-base text-muted">
-            The public side of TeleBotHost. Open a developer profile, read the README, and browse
-            command source like a repo. Official product. Same platform you already use to host
-            bots.
+            The public side of TeleBotHost. Open a developer profile, read the README, browse
+            command source like a repo, and discover bots with AI catalog tags. Official product.
+            Same platform you already use to host bots.
           </p>
           <div className="mt-6 flex flex-wrap items-center justify-center gap-2">
             <Link href="/explore" className="btn btn-primary">
               Browse bots
+            </Link>
+            <Link href="/search" className="btn">
+              Search
             </Link>
             <a href={getConsoleSignupUrl()} className="btn">
               Get started
@@ -94,7 +97,7 @@ export default async function HomePage() {
         </div>
       </section>
 
-      <section className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+      <section className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
         <Feature
           icon={<FolderGit2 size={16} />}
           title="Repo-style bots"
@@ -104,6 +107,11 @@ export default async function HomePage() {
           icon={<Code2 size={16} />}
           title="Commands as .js"
           body="Command files you can open, link, and copy from."
+        />
+        <Feature
+          icon={<Sparkles size={16} />}
+          title="AI catalog"
+          body="Descriptions and tags from command code. An AI mark shows when that summary is used."
         />
         <Feature
           icon={<KeyRound size={16} />}
@@ -122,7 +130,9 @@ export default async function HomePage() {
           <div className="flex items-center justify-between gap-3">
             <div>
               <h2 className="text-xl font-semibold">Bot templates</h2>
-              <p className="text-sm text-muted">Shareable blueprints with README and source</p>
+              <p className="text-sm text-muted">
+                Shareable blueprints with README, source, and AI catalog tags
+              </p>
             </div>
             <Link href="/templates" className="text-sm text-accent hover:underline">
               View all
@@ -160,6 +170,7 @@ export default async function HomePage() {
           <h3 className="font-semibold">Build on TeleBotHost</h3>
           <p className="text-sm text-muted">
             Host bots in the console, publish when you are ready, and share the TeleDevs link.
+            Catalog metadata fills in from your command code automatically.
           </p>
         </div>
         <div className="flex flex-wrap gap-2">

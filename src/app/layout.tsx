@@ -59,6 +59,8 @@ export const metadata: Metadata = {
     "bot hosting",
     "TeleDevs",
     "teledevs.me",
+    "AI bot catalog",
+    "TBL",
   ],
   alternates: {
     canonical: site,

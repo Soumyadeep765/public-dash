@@ -8,9 +8,9 @@ import { pageMetadata } from "@/lib/seo";
 export const metadata: Metadata = pageMetadata({
   title: "Explore bots",
   description:
-    "Browse TeleBotHost community store listings and templates. Open public Telegram bots, READMEs, and command source.",
+    "Browse TeleBotHost community store listings and templates with README docs, command source, and AI catalog tags.",
   path: "/explore",
-  keywords: ["Telegram bot store", "community bots", "TeleBotHost store", "bot templates"],
+  keywords: ["Telegram bot store", "community bots", "TeleBotHost store", "bot templates", "AI catalog"],
 });
 
 export const revalidate = 60;
@@ -57,7 +57,10 @@ export default async function ExplorePage({ searchParams }: { searchParams: Sear
     <div className="shell space-y-5">
       <div>
         <h1 className="text-2xl font-semibold">Explore bots</h1>
-        <p className="mt-1 text-muted">Discover public bots, templates, and listings from TeleBotHost.</p>
+        <p className="mt-1 text-muted">
+          Discover public bots, templates, and listings from TeleBotHost. Cards may show an AI mark
+          when the summary comes from the catalog instead of an owner description.
+        </p>
       </div>
 
       <div className="flex border-b border-border text-sm font-medium">
