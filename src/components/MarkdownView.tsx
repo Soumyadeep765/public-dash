@@ -11,6 +11,7 @@ import {
   isSafeUserContentUrl,
   markdownSanitizeSchema,
   rehypeBadgeRows,
+  rehypeStripHeadingRules,
 } from "@/lib/markdown";
 
 const components: Components = {
@@ -77,6 +78,15 @@ const components: Components = {
   },
 };
 
+/** Normalize common README quirks before parse. */
+function preprocessMarkdown(source: string): string {
+  // `# Heading\n---` → heading only (CSS already underlines h1/h2)
+  return String(source || "").replace(
+    /^(#{1,6}[^\n]*?)\n[ \t]*\n?(?:-{3,}|\*{3,}|_{3,})[ \t]*(?:\n|$)/gm,
+    "$1\n\n",
+  );
+}
+
 export function MarkdownView({
   content,
   className = "px-4 py-5 sm:px-6",
@@ -90,13 +100,14 @@ export function MarkdownView({
         remarkPlugins={[remarkGfm, remarkMath]}
         rehypePlugins={[
           rehypeRaw,
+          rehypeStripHeadingRules,
           rehypeBadgeRows,
           [rehypeSanitize, markdownSanitizeSchema],
           rehypeKatex,
         ]}
         components={components}
       >
-        {content}
+        {preprocessMarkdown(content)}
       </ReactMarkdown>
     </div>
   );

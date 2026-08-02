@@ -68,6 +68,31 @@ function collectBadgeNodes(paragraphs: Element[]): ElementContent[] {
   return out;
 }
 
+/**
+ * Drop thematic breaks (`---`) that sit directly under a heading.
+ * Authors often write `# Title\n---` while h1/h2 already have a CSS underline.
+ */
+export function rehypeStripHeadingRules() {
+  return (tree: Root) => {
+    const children = tree.children as ElementContent[];
+    const next: ElementContent[] = [];
+
+    for (const node of children) {
+      if (isElement(node) && node.tagName === "hr") {
+        let j = next.length - 1;
+        while (j >= 0 && isWhitespaceText(next[j])) j -= 1;
+        const before = j >= 0 ? next[j] : null;
+        if (isElement(before) && /^h[1-6]$/.test(before.tagName)) {
+          continue;
+        }
+      }
+      next.push(node);
+    }
+
+    tree.children = next as Root["children"];
+  };
+}
+
 /** Merge consecutive badge-only paragraphs into one wrapping flex row. */
 export function rehypeBadgeRows() {
   return (tree: Root) => {
