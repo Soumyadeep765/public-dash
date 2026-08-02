@@ -11,6 +11,7 @@ import { ShareMenu } from "@/components/repo/ShareMenu";
 import { AiBlurbMark } from "@/components/AiBlurbMark";
 import { getRelatedPublicBots } from "@/lib/api";
 import { findRepoFile, flattenUnder } from "@/lib/files";
+import { getBotOgImageUrl } from "@/lib/botPhoto";
 import { listDirEntries, loadRepoByIdResult } from "@/lib/repo";
 import { absoluteUrl } from "@/lib/site";
 
@@ -28,6 +29,10 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
   const description =
     (repo.bot.ai_description || repo.bot.description || "").trim().slice(0, 155) ||
     `${repo.bot.name} by @${repo.owner} on TeleDevs. Browse README, commands, and .env placeholders.`;
+  const ogImage = getBotOgImageUrl(repo.bot.photo, repo.handle || repo.bot.bot_username);
+  const ogImages = ogImage
+    ? [{ url: ogImage, width: 400, height: 400, alt: repo.bot.name }]
+    : undefined;
 
   return {
     title,
@@ -47,12 +52,13 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
       description,
       url: absoluteUrl(repo.basePath),
       type: "website",
-      images: repo.bot.photo ? [{ url: repo.bot.photo }] : undefined,
+      images: ogImages,
     },
     twitter: {
       card: "summary",
       title,
       description,
+      images: ogImage ? [ogImage] : undefined,
     },
     robots: {
       index: true,
@@ -105,7 +111,7 @@ export default async function BotRepoByIdPage({ params }: { params: Params }) {
       name: owner,
       url: absoluteUrl(`/${owner}`),
     },
-    image: bot.photo || undefined,
+    image: getBotOgImageUrl(bot.photo, handle || bot.bot_username) || bot.photo || undefined,
   };
 
   return (

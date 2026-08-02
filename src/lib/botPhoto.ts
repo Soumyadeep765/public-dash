@@ -71,6 +71,34 @@ export function getCleanBotPhotoUrl(
   return avatarFallbackUrl(botName);
 }
 
+/**
+ * Absolute image URL for Open Graph / Twitter / Telegram link previews.
+ * Prefer botpic JPG (crawlers often reject SVG / empty bot_photo).
+ */
+export function getBotOgImageUrl(
+  photoUrl?: string | null,
+  username?: string | null,
+): string | null {
+  const cleanUsername = cleanBotUsername(username);
+  if (cleanUsername) {
+    // Same Telegram profile photo proxy used when t.me is blocked
+    return `${BOTPIC_HOST}/${cleanUsername}.jpg`;
+  }
+
+  const url = String(photoUrl || "").trim();
+  if (
+    url &&
+    /^https?:\/\//i.test(url) &&
+    !url.includes("placeholder") &&
+    !url.includes("ui-avatars.com") &&
+    !url.includes("placehold.co")
+  ) {
+    return url;
+  }
+
+  return null;
+}
+
 export async function detectUserCountry(): Promise<string> {
   const cached = readCachedCountry();
   if (cached) return cached;
