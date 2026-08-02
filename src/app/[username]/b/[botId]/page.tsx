@@ -80,7 +80,8 @@ export default async function BotRepoByIdPage({ params }: { params: Params }) {
   const result = await loadRepoByIdResult(username, botId);
   if (result.kind === "missing") notFound();
   if (result.kind === "wrong_owner") permanentRedirect(result.repo.basePath);
-  const repo = result.repo;
+  if (result.kind !== "ok") notFound();
+  const { repo } = result;
 
   const { bot, owner, handle, tree, basePath } = repo;
   const entries = listDirEntries(tree, "");
