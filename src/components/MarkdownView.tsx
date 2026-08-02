@@ -11,7 +11,7 @@ import {
   isSafeUserContentUrl,
   markdownSanitizeSchema,
   rehypeBadgeRows,
-  rehypeStripHeadingRules,
+  rehypeCleanEmptyParagraphs,
 } from "@/lib/markdown";
 
 const components: Components = {
@@ -80,24 +80,10 @@ const components: Components = {
 
 /** Normalize common README quirks before parse. */
 function preprocessMarkdown(source: string): string {
-  let text = String(source || "").replace(/\r\n/g, "\n");
-
-  // `# Heading\n---` / `## Heading\n***` → heading only (no extra rule line)
-  text = text.replace(
-    /^(#{1,6}[^\n]*?)\n[ \t]*\n?(?:-{3,}|\*{3,}|_{3,})[ \t]*(?:\n|$)/gm,
-    "$1\n\n",
-  );
-
-  // `---\n\n## Heading` → just the heading (section rule before heading)
-  text = text.replace(
-    /(?:^|\n)[ \t]*(?:-{3,}|\*{3,}|_{3,})[ \t]*\n{1,2}(#{1,6}[^\n]*)/g,
-    "\n\n$1",
-  );
-
   // Collapse 3+ blank lines so parsers don't leave empty gap blocks
-  text = text.replace(/\n{3,}/g, "\n\n");
-
-  return text;
+  return String(source || "")
+    .replace(/\r\n/g, "\n")
+    .replace(/\n{3,}/g, "\n\n");
 }
 
 export function MarkdownView({
@@ -113,7 +99,7 @@ export function MarkdownView({
         remarkPlugins={[remarkGfm, remarkMath]}
         rehypePlugins={[
           rehypeRaw,
-          rehypeStripHeadingRules,
+          rehypeCleanEmptyParagraphs,
           rehypeBadgeRows,
           [rehypeSanitize, markdownSanitizeSchema],
           rehypeKatex,

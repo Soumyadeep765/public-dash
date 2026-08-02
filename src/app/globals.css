@@ -403,11 +403,12 @@ a.link:hover {
 }
 
 .markdown-body hr {
-  height: 1px;
+  height: 0;
   padding: 0;
-  margin: 16px 0;
+  margin: 1.5em 0;
   border: 0;
-  background: var(--border);
+  border-bottom: 1px solid var(--border);
+  background: transparent;
 }
 
 /* Drop empty blocks that show up as large blank gaps */

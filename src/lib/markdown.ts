@@ -68,10 +68,6 @@ function collectBadgeNodes(paragraphs: Element[]): ElementContent[] {
   return out;
 }
 
-function isHeading(node: ElementContent | null | undefined): boolean {
-  return Boolean(isElement(node) && /^h[1-6]$/.test(node.tagName));
-}
-
 function isEmptyParagraph(node: ElementContent): boolean {
   if (!isElement(node) || node.tagName !== "p") return false;
   return node.children.every(
@@ -79,43 +75,11 @@ function isEmptyParagraph(node: ElementContent): boolean {
   );
 }
 
-/**
- * Drop thematic breaks (`---`) next to headings, and empty paragraphs
- * that show up as large blank bands in READMEs.
- */
-export function rehypeStripHeadingRules() {
+/** Drop empty paragraphs that show up as large blank bands in READMEs. */
+export function rehypeCleanEmptyParagraphs() {
   return (tree: Root) => {
     const children = tree.children as ElementContent[];
-    const next: ElementContent[] = [];
-
-    for (let i = 0; i < children.length; i += 1) {
-      const node = children[i];
-
-      if (isEmptyParagraph(node)) {
-        continue;
-      }
-
-      if (isElement(node) && node.tagName === "hr") {
-        let j = next.length - 1;
-        while (j >= 0 && isWhitespaceText(next[j])) j -= 1;
-        const before = j >= 0 ? next[j] : null;
-
-        let k = i + 1;
-        while (k < children.length && (isWhitespaceText(children[k]) || isEmptyParagraph(children[k]))) {
-          k += 1;
-        }
-        const after = k < children.length ? children[k] : null;
-
-        // Drop `---` right after or right before a heading
-        if (isHeading(before) || isHeading(after)) {
-          continue;
-        }
-      }
-
-      next.push(node);
-    }
-
-    tree.children = next as Root["children"];
+    tree.children = children.filter((node) => !isEmptyParagraph(node)) as Root["children"];
   };
 }
 
