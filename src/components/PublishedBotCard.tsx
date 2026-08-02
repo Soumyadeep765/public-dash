@@ -3,7 +3,9 @@ import { FileCode2 } from "lucide-react";
 import type { PublishedBotSummary } from "@/lib/types";
 import { cleanBotUsername, timeAgo } from "@/lib/format";
 import { botExplorePath } from "@/lib/repo";
+import { botListingBlurb } from "@/lib/botCopy";
 import { BotPhoto } from "@/components/BotPhoto";
+import { AiCatalogMeta } from "@/components/AiCatalogMeta";
 
 export function PublishedBotCard({
   bot,
@@ -14,6 +16,7 @@ export function PublishedBotCard({
 }) {
   const botUser = cleanBotUsername(bot.bot_username);
   const owner = bot.owner_username || username;
+  const blurb = botListingBlurb(bot, "Browse commands, .env, and README.");
 
   return (
     <Link
@@ -32,9 +35,13 @@ export function PublishedBotCard({
           {bot.listing_type_label ? <span className="label">{bot.listing_type_label}</span> : null}
         </div>
         <p className="text-sm text-muted">@{botUser}</p>
-        <p className="mt-1 line-clamp-2 text-sm text-muted">
-          {bot.description || "Browse commands, .env, and README."}
-        </p>
+        <p className="mt-1 line-clamp-2 text-sm text-muted">{blurb}</p>
+        <AiCatalogMeta
+          category={bot.ai_category}
+          tags={bot.ai_tags}
+          className="mt-2"
+          maxTags={4}
+        />
         <div className="mt-2 flex flex-wrap gap-3 text-xs text-muted">
           <span className="inline-flex items-center gap-1">
             <FileCode2 size={12} />

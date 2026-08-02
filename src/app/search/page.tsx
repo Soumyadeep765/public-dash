@@ -4,7 +4,9 @@ import { User } from "lucide-react";
 import { searchPublic } from "@/lib/api";
 import { pageMetadata } from "@/lib/seo";
 import { botExplorePath } from "@/lib/repo";
+import { botListingBlurb } from "@/lib/botCopy";
 import { BotPhoto } from "@/components/BotPhoto";
+import { AiCatalogMeta } from "@/components/AiCatalogMeta";
 
 type SearchParams = Promise<{ q?: string; type?: string }>;
 
@@ -43,14 +45,16 @@ export default async function SearchPage({ searchParams }: { searchParams: Searc
     <div className="shell space-y-5">
       <div>
         <h1 className="text-2xl font-semibold">Search</h1>
-        <p className="mt-1 text-muted">Find developers and published bots.</p>
+        <p className="mt-1 text-muted">
+          Find developers and published bots by name, description, or AI tags.
+        </p>
       </div>
 
       <form className="flex flex-col gap-2 sm:flex-row">
         <input
           name="q"
           defaultValue={q}
-          placeholder="Search users or bots…"
+          placeholder="Search users, bots, tags…"
           className="input"
           autoFocus
         />
@@ -127,24 +131,34 @@ export default async function SearchPage({ searchParams }: { searchParams: Searc
                   results.bots.map((bot) => {
                     const owner = bot.owner_username || "unknown";
                     const handle = bot.bot_username.replace(/^@/, "");
+                    const blurb = botListingBlurb(bot);
                     return (
                       <Link
                         key={`${bot.bot_id}-${handle}`}
                         href={botExplorePath(owner, bot.bot_id)}
-                        className="flex items-center gap-3 border-b border-border px-4 py-3 last:border-b-0 hover:bg-row-hover"
+                        className="flex items-start gap-3 border-b border-border px-4 py-3 last:border-b-0 hover:bg-row-hover"
                       >
                         <BotPhoto
                           photo={bot.photo}
                           username={bot.bot_username}
                           name={bot.name}
-                          className="h-9 w-9 rounded-md border border-border object-cover"
+                          className="mt-0.5 h-9 w-9 rounded-md border border-border object-cover"
                         />
-                        <div className="min-w-0">
+                        <div className="min-w-0 flex-1">
                           <p className="truncate font-semibold text-accent">{bot.name}</p>
                           <p className="truncate text-sm text-muted">
                             @{handle} · by @{owner}
                             {bot.listing_type_label ? ` · ${bot.listing_type_label}` : ""}
                           </p>
+                          {blurb ? (
+                            <p className="mt-1 line-clamp-2 text-sm text-muted">{blurb}</p>
+                          ) : null}
+                          <AiCatalogMeta
+                            category={bot.ai_category}
+                            tags={bot.ai_tags}
+                            className="mt-1.5"
+                            maxTags={4}
+                          />
                         </div>
                       </Link>
                     );

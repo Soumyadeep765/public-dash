@@ -47,6 +47,12 @@ export interface PublishedBotSummary {
   listing_type: ListingType | null;
   listing_type_label: string | null;
   description: string;
+  /** AI catalog category from background scan */
+  ai_category?: string | null;
+  /** Short AI-generated public summary */
+  ai_description?: string | null;
+  /** Searchable AI keywords */
+  ai_tags?: string[];
   commands_count: number;
   profile_path?: string | null;
   created_at: string;

@@ -24,7 +24,7 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
 
   const title = `${repo.bot.name} · @${repo.handle}`;
   const description =
-    (repo.bot.description || "").trim().slice(0, 155) ||
+    (repo.bot.ai_description || repo.bot.description || "").trim().slice(0, 155) ||
     `${repo.bot.name} by @${repo.owner} on TeleDevs. Browse README, commands, and .env placeholders.`;
 
   return {
@@ -36,7 +36,9 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
       "TeleBotHost",
       "Telegram bot",
       repo.bot.listing_type_label || "published bot",
-    ],
+      repo.bot.ai_category,
+      ...(Array.isArray(repo.bot.ai_tags) ? repo.bot.ai_tags : []),
+    ].filter(Boolean) as string[],
     alternates: { canonical: absoluteUrl(repo.basePath) },
     openGraph: {
       title,
@@ -87,7 +89,7 @@ export default async function BotRepoByIdPage({ params }: { params: Params }) {
     "@context": "https://schema.org",
     "@type": "SoftwareSourceCode",
     name: bot.name,
-    description: bot.description || bot.name,
+    description: bot.ai_description || bot.description || bot.name,
     url: absoluteUrl(basePath),
     codeRepository: absoluteUrl(basePath),
     programmingLanguage: "JavaScript",

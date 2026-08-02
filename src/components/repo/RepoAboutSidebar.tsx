@@ -1,9 +1,11 @@
 import Link from "next/link";
-import { ExternalLink, FileCode2, KeyRound, Terminal } from "lucide-react";
+import { ExternalLink, FileCode2, KeyRound, Sparkles, Terminal } from "lucide-react";
 import type { PublishedBotDetail } from "@/lib/types";
 import { formatDate, timeAgo } from "@/lib/format";
+import { botListingBlurb } from "@/lib/botCopy";
 import { getConsoleBaseUrl } from "@/lib/session";
 import { ForkBotButton } from "@/components/repo/ForkBotButton";
+import { AiCatalogMeta } from "@/components/AiCatalogMeta";
 
 export function RepoAboutSidebar({
   bot,
@@ -15,6 +17,10 @@ export function RepoAboutSidebar({
   handle: string;
 }) {
   const consoleUrl = getConsoleBaseUrl();
+  const blurb = botListingBlurb(bot, "No description provided.");
+  const ownerDesc = String(bot.description || "").trim();
+  const aiDesc = String(bot.ai_description || "").trim();
+  const showOwnerDesc = ownerDesc && aiDesc && ownerDesc !== aiDesc;
 
   return (
     <section className="box overflow-hidden">
@@ -22,9 +28,26 @@ export function RepoAboutSidebar({
         <h2 className="text-sm font-semibold">About</h2>
       </div>
       <div className="space-y-3 p-3 text-sm">
-        <p className="text-muted">
-          {bot.description || "No description provided."}
-        </p>
+        <p className="text-muted">{blurb}</p>
+
+        {(bot.ai_category || (bot.ai_tags && bot.ai_tags.length > 0)) ? (
+          <div className="space-y-1.5">
+            <p className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-muted">
+              <Sparkles size={12} />
+              AI catalog
+            </p>
+            <AiCatalogMeta category={bot.ai_category} tags={bot.ai_tags} maxTags={8} />
+          </div>
+        ) : null}
+
+        {showOwnerDesc ? (
+          <div className="rounded-md border border-border bg-canvas-subtle px-2.5 py-2">
+            <p className="mb-1 text-[11px] font-semibold uppercase tracking-wide text-muted">
+              Owner description
+            </p>
+            <p className="text-muted">{ownerDesc}</p>
+          </div>
+        ) : null}
 
         {bot.listing_type_label ? (
           <p>

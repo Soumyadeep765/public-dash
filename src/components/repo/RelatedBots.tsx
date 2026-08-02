@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { PublishedBotSummary } from "@/lib/types";
 import { botExplorePath } from "@/lib/repo";
 import { cleanBotUsername } from "@/lib/format";
+import { botListingBlurb, formatAiCategory } from "@/lib/botCopy";
 import { BotPhoto } from "@/components/BotPhoto";
 
 export function RelatedBots({
@@ -21,21 +22,29 @@ export function RelatedBots({
       <ul className="divide-y divide-border">
         {bots.map((bot) => {
           const handle = cleanBotUsername(bot.bot_username);
+          const blurb = botListingBlurb(bot);
+          const category = formatAiCategory(bot.ai_category);
           return (
             <li key={bot.bot_id}>
               <Link
                 href={botExplorePath(bot.owner_username || owner, bot.bot_id)}
-                className="flex items-center gap-2 px-3 py-2.5 hover:bg-row-hover"
+                className="flex items-start gap-2 px-3 py-2.5 hover:bg-row-hover"
               >
                 <BotPhoto
                   photo={bot.photo}
                   username={bot.bot_username}
                   name={bot.name}
-                  className="h-7 w-7 rounded-md border border-border object-cover"
+                  className="mt-0.5 h-7 w-7 rounded-md border border-border object-cover"
                 />
                 <div className="min-w-0">
                   <p className="truncate text-sm font-medium text-accent">{bot.name}</p>
-                  <p className="truncate text-xs text-muted">@{handle}</p>
+                  <p className="truncate text-xs text-muted">
+                    @{handle}
+                    {category ? ` · ${category}` : ""}
+                  </p>
+                  {blurb ? (
+                    <p className="mt-0.5 line-clamp-2 text-xs text-muted">{blurb}</p>
+                  ) : null}
                 </div>
               </Link>
             </li>
