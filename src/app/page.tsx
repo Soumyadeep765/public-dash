@@ -1,21 +1,17 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
-import { BookOpen, Code2, FileCode2, FolderGit2, KeyRound } from "lucide-react";
+import { BookOpen, Code2, FolderGit2, KeyRound } from "lucide-react";
 import { StoreBotCard } from "@/components/StoreBotCard";
+import { TemplateBotCard } from "@/components/TemplateBotCard";
 import { HomeSignedInBanner } from "@/components/HomeSignedIn";
-import { BotPhoto } from "@/components/BotPhoto";
 import { JsonLd } from "@/components/repo/JsonLd";
 import { TbhLogo } from "@/components/TbhLogo";
 import { listStoreBots, listTemplates } from "@/lib/api";
-import { cleanBotUsername, timeAgo } from "@/lib/format";
-import { botListingBlurb } from "@/lib/botCopy";
-import { botExplorePath } from "@/lib/repo";
 import { pageMetadata, SITE_NAME } from "@/lib/seo";
 import { absoluteUrl } from "@/lib/site";
 import { getConsoleSignupUrl } from "@/lib/session";
 import type { PublishedBotDetail } from "@/lib/types";
-import { AiCatalogMeta } from "@/components/AiCatalogMeta";
 
 export const revalidate = 60;
 
@@ -133,48 +129,9 @@ export default async function HomePage() {
             </Link>
           </div>
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            {templates.map((bot) => {
-              const owner = bot.owner_username || "unknown";
-              const username = cleanBotUsername(bot.bot_username);
-              return (
-                <Link
-                  key={bot.bot_id}
-                  href={botExplorePath(owner, bot.bot_id)}
-                  className="box flex h-full flex-col p-4 hover:bg-row-hover"
-                >
-                  <div className="flex gap-3">
-                    <BotPhoto
-                      photo={bot.photo}
-                      username={bot.bot_username}
-                      name={bot.name}
-                      className="h-10 w-10 rounded-md border border-border object-cover"
-                    />
-                    <div className="min-w-0 flex-1">
-                      <h3 className="truncate font-semibold text-accent">{bot.name}</h3>
-                      <p className="truncate text-sm text-muted">@{username}</p>
-                    </div>
-                  </div>
-                  <p className="mt-3 line-clamp-3 flex-1 text-sm text-muted">
-                    {botListingBlurb(bot, "Open to browse template source.")}
-                  </p>
-                  <AiCatalogMeta
-                    category={bot.ai_category}
-                    tags={bot.ai_tags}
-                    className="mt-2"
-                    maxTags={3}
-                  />
-                  <div className="mt-3 flex flex-wrap items-center gap-3 text-xs text-muted">
-                    <span className="label">Template</span>
-                    <span className="inline-flex items-center gap-1">
-                      <FileCode2 size={12} />
-                      {bot.commands_count} commands
-                    </span>
-                    <span>Updated {timeAgo(bot.updated_at)}</span>
-                  </div>
-                  <p className="mt-2 text-xs text-muted">by @{owner}</p>
-                </Link>
-              );
-            })}
+            {templates.map((bot) => (
+              <TemplateBotCard key={bot.bot_id} bot={bot} />
+            ))}
           </div>
         </section>
       ) : null}

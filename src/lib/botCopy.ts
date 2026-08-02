@@ -1,13 +1,13 @@
-/** Prefer AI summary when present; fall back to owner description. */
+/** Prefer owner description; fall back to AI summary. */
 export function botListingBlurb(bot: {
   description?: string | null;
   ai_description?: string | null;
   name?: string | null;
 }, fallback = ""): string {
-  const ai = String(bot.ai_description || "").trim();
-  if (ai) return ai;
   const desc = String(bot.description || "").trim();
   if (desc) return desc;
+  const ai = String(bot.ai_description || "").trim();
+  if (ai) return ai;
   return fallback || String(bot.name || "").trim() || "";
 }
 

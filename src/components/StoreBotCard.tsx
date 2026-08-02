@@ -3,6 +3,7 @@ import { Download, Star } from "lucide-react";
 import type { StoreBot } from "@/lib/types";
 import { cleanBotUsername, formatNumber } from "@/lib/format";
 import { botExplorePath } from "@/lib/repo";
+import { cleanAiTags } from "@/lib/botCopy";
 import { BotPhoto } from "@/components/BotPhoto";
 
 export function StoreBotCard({ bot }: { bot: StoreBot }) {
@@ -14,6 +15,7 @@ export function StoreBotCard({ bot }: { bot: StoreBot }) {
       : owner
         ? `/${owner}/${username}`
         : `/store/${bot._id}`;
+  const tags = cleanAiTags(bot.tags, 4);
 
   return (
     <article className="box flex h-full flex-col">
@@ -33,8 +35,15 @@ export function StoreBotCard({ bot }: { bot: StoreBot }) {
         <p className="mt-3 line-clamp-3 flex-1 text-sm text-muted">
           {bot.description || "No description yet."}
         </p>
-        <div className="mt-3 flex flex-wrap items-center gap-3 text-xs text-muted">
+        <div className="mt-3 flex flex-wrap items-center gap-2 text-xs text-muted">
           <span className="label">{bot.category || "General"}</span>
+          {tags.map((tag) => (
+            <span key={tag} className="label">
+              {tag}
+            </span>
+          ))}
+        </div>
+        <div className="mt-3 flex flex-wrap items-center gap-3 text-xs text-muted">
           <span className="inline-flex items-center gap-1">
             <Star size={12} />
             {bot.rating?.toFixed?.(1) ?? "—"}

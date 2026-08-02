@@ -1,12 +1,9 @@
 import Link from "next/link";
 import { StoreBotCard } from "@/components/StoreBotCard";
+import { TemplateBotCard } from "@/components/TemplateBotCard";
 import { listStoreBots, listTemplates } from "@/lib/api";
 import type { Metadata } from "next";
 import { pageMetadata } from "@/lib/seo";
-import { cleanBotUsername, timeAgo } from "@/lib/format";
-import { botListingBlurb } from "@/lib/botCopy";
-import { BotPhoto } from "@/components/BotPhoto";
-import { AiCatalogMeta } from "@/components/AiCatalogMeta";
 
 export const metadata: Metadata = pageMetadata({
   title: "Explore bots",
@@ -114,43 +111,10 @@ export default async function ExplorePage({ searchParams }: { searchParams: Sear
       ) : (
         <>
           {templateData.templates.length ? (
-            <div className="box overflow-hidden divide-y divide-border">
-              {templateData.templates.map((bot) => {
-                const owner = bot.owner_username || "unknown";
-                const username = cleanBotUsername(bot.bot_username);
-                return (
-                  <Link
-                    key={bot.bot_id}
-                    href={`/${owner}/b/${bot.bot_id}`}
-                    className="flex items-start gap-3 px-4 py-4 hover:bg-row-hover"
-                  >
-                    <BotPhoto
-                      photo={bot.photo}
-                      username={bot.bot_username}
-                      name={bot.name}
-                      className="h-8 w-8 rounded-md border border-border object-cover"
-                    />
-                    <div className="min-w-0">
-                      <h2 className="font-semibold text-accent">{bot.name}</h2>
-                      <p className="text-sm text-muted">
-                        @{username} · by @{owner}
-                      </p>
-                      <p className="mt-1 line-clamp-2 text-sm text-muted">
-                        {botListingBlurb(bot, "Open to browse template source.")}
-                      </p>
-                      <AiCatalogMeta
-                        category={bot.ai_category}
-                        tags={bot.ai_tags}
-                        className="mt-1.5"
-                        maxTags={4}
-                      />
-                      <p className="mt-1 text-xs text-muted">
-                        {bot.commands_count} commands · updated {timeAgo(bot.updated_at)}
-                      </p>
-                    </div>
-                  </Link>
-                );
-              })}
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+              {templateData.templates.map((bot) => (
+                <TemplateBotCard key={bot.bot_id} bot={bot} />
+              ))}
             </div>
           ) : (
             <div className="box p-8 text-center text-muted">No templates found.</div>
