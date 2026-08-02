@@ -13,7 +13,8 @@ import {
 import { BookMarked, Search, User } from "lucide-react";
 import { API_BASE } from "@/lib/api";
 import { botExplorePath } from "@/lib/repo";
-import { botListingBlurb, formatAiCategory } from "@/lib/botCopy";
+import { resolveListingBlurb, formatAiCategory } from "@/lib/botCopy";
+import { AiBlurbMark } from "@/components/AiBlurbMark";
 import type { SearchBotHit, SearchUserHit } from "@/lib/types";
 
 type SuggestState = {
@@ -186,7 +187,7 @@ export function HeaderSearch() {
                 const owner = bot.owner_username || "unknown";
                 const href = botExplorePath(owner, bot.bot_id);
                 const handle = (bot.bot_username || "").replace(/^@/, "");
-                const blurb = botListingBlurb(bot);
+                const blurb = resolveListingBlurb(bot);
                 const category = formatAiCategory(bot.ai_category);
                 return (
                   <Link
@@ -201,9 +202,10 @@ export function HeaderSearch() {
                       <span className="block truncate font-medium text-fg">
                         {owner}/{handle || bot.name}
                       </span>
-                      {blurb ? (
+                      {blurb.text ? (
                         <span className="mt-0.5 block line-clamp-1 text-xs text-muted">
-                          {blurb}
+                          {blurb.fromAi ? <AiBlurbMark className="mr-1 align-middle" /> : null}
+                          {blurb.text}
                         </span>
                       ) : null}
                       {category ? (

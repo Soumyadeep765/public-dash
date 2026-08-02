@@ -2,8 +2,9 @@ import Link from "next/link";
 import type { PublishedBotSummary } from "@/lib/types";
 import { botExplorePath } from "@/lib/repo";
 import { cleanBotUsername } from "@/lib/format";
-import { botListingBlurb, formatAiCategory } from "@/lib/botCopy";
+import { resolveListingBlurb, formatAiCategory } from "@/lib/botCopy";
 import { BotPhoto } from "@/components/BotPhoto";
+import { AiBlurbMark } from "@/components/AiBlurbMark";
 
 export function RelatedBots({
   bots,
@@ -22,7 +23,7 @@ export function RelatedBots({
       <ul className="divide-y divide-border">
         {bots.map((bot) => {
           const handle = cleanBotUsername(bot.bot_username);
-          const blurb = botListingBlurb(bot);
+          const blurb = resolveListingBlurb(bot);
           const category = formatAiCategory(bot.ai_category);
           return (
             <li key={bot.bot_id}>
@@ -42,8 +43,11 @@ export function RelatedBots({
                     @{handle}
                     {category ? ` · ${category}` : ""}
                   </p>
-                  {blurb ? (
-                    <p className="mt-0.5 line-clamp-2 text-xs text-muted">{blurb}</p>
+                  {blurb.text ? (
+                    <p className="mt-0.5 line-clamp-2 text-xs text-muted">
+                      {blurb.fromAi ? <AiBlurbMark className="mr-1 align-middle" /> : null}
+                      {blurb.text}
+                    </p>
                   ) : null}
                 </div>
               </Link>

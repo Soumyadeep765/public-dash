@@ -1,14 +1,44 @@
 /** Prefer owner description; fall back to AI summary. */
-export function botListingBlurb(bot: {
+export type ListingBlurb = {
+  text: string;
+  /** True when shown text comes from ai_description (no owner/store description). */
+  fromAi: boolean;
+};
+
+export function resolveListingBlurb(
+  bot: {
+    description?: string | null;
+    ai_description?: string | null;
+    name?: string | null;
+  },
+  fallback = "",
+): ListingBlurb {
+  const desc = String(bot.description || "").trim();
+  if (desc) return { text: desc, fromAi: false };
+
+  const ai = String(bot.ai_description || "").trim();
+  if (ai) return { text: ai, fromAi: true };
+
+  const fb = fallback || String(bot.name || "").trim() || "";
+  return { text: fb, fromAi: false };
+}
+
+export function botListingBlurb(
+  bot: {
+    description?: string | null;
+    ai_description?: string | null;
+    name?: string | null;
+  },
+  fallback = "",
+): string {
+  return resolveListingBlurb(bot, fallback).text;
+}
+
+export function isAiPrimaryBlurb(bot: {
   description?: string | null;
   ai_description?: string | null;
-  name?: string | null;
-}, fallback = ""): string {
-  const desc = String(bot.description || "").trim();
-  if (desc) return desc;
-  const ai = String(bot.ai_description || "").trim();
-  if (ai) return ai;
-  return fallback || String(bot.name || "").trim() || "";
+}): boolean {
+  return resolveListingBlurb(bot).fromAi;
 }
 
 export function formatAiCategory(category?: string | null): string | null {

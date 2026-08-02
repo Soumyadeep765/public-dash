@@ -3,9 +3,10 @@ import { FileCode2 } from "lucide-react";
 import type { PublishedBotSummary } from "@/lib/types";
 import { cleanBotUsername, timeAgo } from "@/lib/format";
 import { botExplorePath } from "@/lib/repo";
-import { botListingBlurb } from "@/lib/botCopy";
+import { resolveListingBlurb } from "@/lib/botCopy";
 import { BotPhoto } from "@/components/BotPhoto";
 import { AiCatalogMeta } from "@/components/AiCatalogMeta";
+import { AiBlurbMark } from "@/components/AiBlurbMark";
 
 export function PublishedBotCard({
   bot,
@@ -16,7 +17,7 @@ export function PublishedBotCard({
 }) {
   const botUser = cleanBotUsername(bot.bot_username);
   const owner = bot.owner_username || username;
-  const blurb = botListingBlurb(bot, "Browse commands, .env, and README.");
+  const blurb = resolveListingBlurb(bot, "Browse commands, .env, and README.");
 
   return (
     <Link
@@ -35,7 +36,10 @@ export function PublishedBotCard({
           {bot.listing_type_label ? <span className="label">{bot.listing_type_label}</span> : null}
         </div>
         <p className="text-sm text-muted">@{botUser}</p>
-        <p className="mt-1 line-clamp-2 text-sm text-muted">{blurb}</p>
+        <p className="mt-1 line-clamp-2 text-sm text-muted">
+          {blurb.fromAi ? <AiBlurbMark className="mr-1.5 align-middle" /> : null}
+          {blurb.text}
+        </p>
         <AiCatalogMeta
           category={bot.ai_category}
           tags={bot.ai_tags}

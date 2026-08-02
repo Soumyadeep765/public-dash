@@ -3,14 +3,15 @@ import { FileCode2 } from "lucide-react";
 import type { PublishedBotSummary } from "@/lib/types";
 import { cleanBotUsername, timeAgo } from "@/lib/format";
 import { botExplorePath } from "@/lib/repo";
-import { botListingBlurb, formatAiCategory, cleanAiTags } from "@/lib/botCopy";
+import { resolveListingBlurb, formatAiCategory, cleanAiTags } from "@/lib/botCopy";
 import { BotPhoto } from "@/components/BotPhoto";
+import { AiBlurbMark } from "@/components/AiBlurbMark";
 
 export function TemplateBotCard({ bot }: { bot: PublishedBotSummary }) {
   const owner = bot.owner_username;
   const username = cleanBotUsername(bot.bot_username);
   const href = botExplorePath(owner || "unknown", bot.bot_id);
-  const blurb = botListingBlurb(bot, "Open to browse template source.");
+  const blurb = resolveListingBlurb(bot, "Open to browse template source.");
   const category = formatAiCategory(bot.ai_category);
   const tags = cleanAiTags(bot.ai_tags, 4);
 
@@ -29,7 +30,10 @@ export function TemplateBotCard({ bot }: { bot: PublishedBotSummary }) {
             <p className="truncate text-sm text-muted">@{username}</p>
           </div>
         </div>
-        <p className="mt-3 line-clamp-3 flex-1 text-sm text-muted">{blurb}</p>
+        <p className="mt-3 line-clamp-3 flex-1 text-sm text-muted">
+          {blurb.fromAi ? <AiBlurbMark className="mr-1.5 align-middle" /> : null}
+          {blurb.text}
+        </p>
         <div className="mt-3 flex flex-wrap items-center gap-2 text-xs text-muted">
           <span className="label">Template</span>
           {category ? <span className="label">{category}</span> : null}

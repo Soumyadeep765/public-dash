@@ -2,10 +2,11 @@ import Link from "next/link";
 import { ExternalLink, FileCode2, KeyRound, Sparkles, Terminal } from "lucide-react";
 import type { PublishedBotDetail } from "@/lib/types";
 import { formatDate, timeAgo } from "@/lib/format";
-import { botListingBlurb } from "@/lib/botCopy";
+import { resolveListingBlurb } from "@/lib/botCopy";
 import { getConsoleBaseUrl } from "@/lib/session";
 import { ForkBotButton } from "@/components/repo/ForkBotButton";
 import { AiCatalogMeta } from "@/components/AiCatalogMeta";
+import { AiBlurbMark } from "@/components/AiBlurbMark";
 
 export function RepoAboutSidebar({
   bot,
@@ -17,7 +18,7 @@ export function RepoAboutSidebar({
   handle: string;
 }) {
   const consoleUrl = getConsoleBaseUrl();
-  const blurb = botListingBlurb(bot, "No description provided.");
+  const blurb = resolveListingBlurb(bot, "No description provided.");
 
   return (
     <section className="box overflow-hidden">
@@ -25,7 +26,10 @@ export function RepoAboutSidebar({
         <h2 className="text-sm font-semibold">About</h2>
       </div>
       <div className="space-y-3 p-3 text-sm">
-        <p className="text-muted">{blurb}</p>
+        <p className="text-muted">
+          {blurb.fromAi ? <AiBlurbMark className="mr-1.5 align-middle" /> : null}
+          {blurb.text}
+        </p>
 
         {(bot.ai_category || (bot.ai_tags && bot.ai_tags.length > 0)) ? (
           <div className="space-y-1.5">
