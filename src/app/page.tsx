@@ -9,11 +9,13 @@ import { JsonLd } from "@/components/repo/JsonLd";
 import { TbhLogo } from "@/components/TbhLogo";
 import { listStoreBots, listTemplates } from "@/lib/api";
 import { cleanBotUsername, timeAgo } from "@/lib/format";
+import { botListingBlurb } from "@/lib/botCopy";
 import { botExplorePath } from "@/lib/repo";
 import { pageMetadata, SITE_NAME } from "@/lib/seo";
 import { absoluteUrl } from "@/lib/site";
 import { getConsoleSignupUrl } from "@/lib/session";
 import type { PublishedBotDetail } from "@/lib/types";
+import { AiCatalogMeta } from "@/components/AiCatalogMeta";
 
 export const revalidate = 60;
 
@@ -153,8 +155,14 @@ export default async function HomePage() {
                     </div>
                   </div>
                   <p className="mt-3 line-clamp-3 flex-1 text-sm text-muted">
-                    {bot.description || "Open to browse template source."}
+                    {botListingBlurb(bot, "Open to browse template source.")}
                   </p>
+                  <AiCatalogMeta
+                    category={bot.ai_category}
+                    tags={bot.ai_tags}
+                    className="mt-2"
+                    maxTags={3}
+                  />
                   <div className="mt-3 flex flex-wrap items-center gap-3 text-xs text-muted">
                     <span className="label">Template</span>
                     <span className="inline-flex items-center gap-1">
@@ -171,22 +179,24 @@ export default async function HomePage() {
         </section>
       ) : null}
 
-      <section className="space-y-3">
-        <div className="flex items-center justify-between gap-3">
-          <div>
-            <h2 className="text-xl font-semibold">From the community store</h2>
-            <p className="text-sm text-muted">Published listings you can open and share</p>
+      {store.bots.length ? (
+        <section className="space-y-3">
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <h2 className="text-xl font-semibold">From the community store</h2>
+              <p className="text-sm text-muted">Published listings you can open and share</p>
+            </div>
+            <Link href="/explore" className="text-sm text-accent hover:underline">
+              View all
+            </Link>
           </div>
-          <Link href="/explore" className="text-sm text-accent hover:underline">
-            View all
-          </Link>
-        </div>
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          {store.bots.map((bot) => (
-            <StoreBotCard key={bot._id} bot={bot} />
-          ))}
-        </div>
-      </section>
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {store.bots.map((bot) => (
+              <StoreBotCard key={bot._id} bot={bot} />
+            ))}
+          </div>
+        </section>
+      ) : null}
 
       <section className="box flex flex-col items-start gap-3 p-5 sm:flex-row sm:items-center sm:justify-between">
         <div>
