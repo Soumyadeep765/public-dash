@@ -5,6 +5,7 @@ import { BotRepoHeader } from "@/components/repo/BotRepoHeader";
 import { FileTable } from "@/components/repo/FileTable";
 import { JsonLd } from "@/components/repo/JsonLd";
 import { RepoAboutSidebar } from "@/components/repo/RepoAboutSidebar";
+import { AiCatalogCard } from "@/components/repo/AiCatalogCard";
 import { RelatedBots } from "@/components/repo/RelatedBots";
 import { ShareMenu } from "@/components/repo/ShareMenu";
 import { getRelatedPublicBots } from "@/lib/api";
@@ -136,6 +137,7 @@ export default async function BotRepoByIdPage({ params }: { params: Params }) {
 
         <aside className="space-y-4">
           <RepoAboutSidebar bot={bot} owner={owner} handle={handle} />
+          <AiCatalogCard bot={bot} />
           <RelatedBots bots={related} owner={owner} />
         </aside>
       </div>
