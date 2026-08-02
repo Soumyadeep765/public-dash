@@ -4,9 +4,9 @@ import type { Metadata } from "next";
 import { FileCode2 } from "lucide-react";
 import { botExplorePath, resolveRepoSlug } from "@/lib/repo";
 import { timeAgo } from "@/lib/format";
+import { botListingBlurb } from "@/lib/botCopy";
 import { absoluteUrl } from "@/lib/site";
 import { BotPhoto } from "@/components/BotPhoto";
-import { BotDescriptionText } from "@/components/BotDescriptionText";
 import { AiCatalogMeta } from "@/components/AiCatalogMeta";
 
 type Params = Promise<{ username: string; bot: string }>;
@@ -92,14 +92,9 @@ export default async function BotSlugResolvePage({ params }: { params: Params })
               <p className="text-sm text-muted">
                 ID {item.bot_id} · @{botUsername}
               </p>
-              <div className="mt-1">
-                <BotDescriptionText
-                  bot={item}
-                  fallback="Open to browse source."
-                  className="text-sm text-muted"
-                  clampClassName="line-clamp-2"
-                />
-              </div>
+              <p className="mt-1 line-clamp-2 text-sm text-muted">
+                {botListingBlurb(item, "Open to browse source.")}
+              </p>
               <AiCatalogMeta
                 category={item.ai_category}
                 tags={item.ai_tags}
