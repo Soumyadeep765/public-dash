@@ -53,6 +53,10 @@ export interface PublishedBotSummary {
   ai_description?: string | null;
   /** Searchable AI keywords */
   ai_tags?: string[];
+  /** AI quality score 0–100 from catalog scan */
+  ai_score?: number | null;
+  /** AI star rating 1.0–5.0 derived from ai_score */
+  ai_rating?: number | null;
   commands_count: number;
   profile_path?: string | null;
   created_at: string;

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { FileCode2 } from "lucide-react";
+import { FileCode2, Star } from "lucide-react";
 import type { PublishedBotSummary } from "@/lib/types";
 import { cleanBotUsername, timeAgo } from "@/lib/format";
 import { botExplorePath } from "@/lib/repo";
@@ -18,6 +18,10 @@ export function PublishedBotCard({
   const botUser = cleanBotUsername(bot.bot_username);
   const owner = bot.owner_username || username;
   const blurb = resolveListingBlurb(bot, "Browse commands, .env, and README.");
+  const rating =
+    typeof bot.ai_rating === "number" && Number.isFinite(bot.ai_rating)
+      ? bot.ai_rating
+      : null;
 
   return (
     <Link
@@ -47,6 +51,12 @@ export function PublishedBotCard({
           maxTags={4}
         />
         <div className="mt-2 flex flex-wrap gap-3 text-xs text-muted">
+          {rating != null ? (
+            <span className="inline-flex items-center gap-1" title="AI quality rating">
+              <Star size={12} />
+              {rating.toFixed(1)}
+            </span>
+          ) : null}
           <span className="inline-flex items-center gap-1">
             <FileCode2 size={12} />
             {bot.commands_count} commands
