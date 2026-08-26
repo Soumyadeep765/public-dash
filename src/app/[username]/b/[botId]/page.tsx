@@ -103,16 +103,29 @@ export default async function BotRepoByIdPage({ params }: { params: Params }) {
     "@context": "https://schema.org",
     "@type": "SoftwareSourceCode",
     name: bot.name,
-    description: bot.ai_description || bot.description || bot.name,
+    description: [bot.ai_description, bot.description, `${bot.name} by @${owner} on TeleDevs.`].filter(Boolean).join(" "),
     url: absoluteUrl(basePath),
     codeRepository: absoluteUrl(basePath),
     programmingLanguage: "JavaScript",
+    dateCreated: bot.created_at,
+    dateModified: bot.updated_at,
+    applicationCategory: bot.ai_category || "Bot",
+    softwareRequirements: "Telegram",
     author: {
       "@type": "Person",
       name: owner,
       url: absoluteUrl(`/${owner}`),
     },
     image: getBotOgImageUrl(bot.photo, handle || bot.bot_username) || bot.photo || undefined,
+    keywords: [
+      handle,
+      owner,
+      "TeleBotHost",
+      "Telegram bot",
+      bot.listing_type_label || "published bot",
+      bot.ai_category,
+      ...(Array.isArray(bot.ai_tags) ? bot.ai_tags : []),
+    ].filter(Boolean).join(", "),
   };
 
   return (
