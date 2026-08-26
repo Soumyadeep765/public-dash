@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { Metadata } from "next";
-import { User } from "lucide-react";
+import { User, Star } from "lucide-react";
 import { searchPublic } from "@/lib/api";
 import { pageMetadata } from "@/lib/seo";
 import { botExplorePath } from "@/lib/repo";
@@ -41,6 +41,10 @@ export default async function SearchPage({ searchParams }: { searchParams: Searc
   const results = q
     ? await searchPublic({ q, type, limit: 20 }).catch(() => null)
     : null;
+
+  if (results?.bots) {
+    results.bots.sort((a, b) => (b.ai_rating || 0) - (a.ai_rating || 0));
+  }
 
   return (
     <div className="shell space-y-5">
@@ -136,6 +140,7 @@ export default async function SearchPage({ searchParams }: { searchParams: Searc
                     const owner = bot.owner_username || "unknown";
                     const handle = bot.bot_username.replace(/^@/, "");
                     const blurb = resolveListingBlurb(bot);
+                    const rating = typeof bot.ai_rating === "number" && Number.isFinite(bot.ai_rating) ? bot.ai_rating : null;
                     return (
                       <Link
                         key={`${bot.bot_id}-${handle}`}
@@ -166,6 +171,14 @@ export default async function SearchPage({ searchParams }: { searchParams: Searc
                             className="mt-1.5"
                             maxTags={4}
                           />
+                          {rating != null ? (
+                            <div className="mt-2 flex flex-wrap items-center gap-3 text-xs text-muted">
+                              <span className="inline-flex items-center gap-1" title="AI quality rating">
+                                <Star size={12} />
+                                {rating.toFixed(1)}
+                              </span>
+                            </div>
+                          ) : null}
                         </div>
                       </Link>
                     );

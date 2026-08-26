@@ -25,6 +25,10 @@ export default async function TemplatesPage({ searchParams }: { searchParams: Se
     pagination: { page: 1, limit: 30, total: 0 },
   }));
 
+  if (data?.templates) {
+    data.templates.sort((a, b) => (b.ai_rating || 0) - (a.ai_rating || 0));
+  }
+
   return (
     <div className="shell space-y-5">
       <div>
