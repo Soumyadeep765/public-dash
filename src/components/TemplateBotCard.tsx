@@ -34,11 +34,11 @@ export function TemplateBotCard({ bot }: { bot: PublishedBotSummary }) {
             <p className="truncate text-sm text-muted">@{username}</p>
           </div>
         </div>
-        <p className="mt-3 line-clamp-3 flex-1 text-sm text-muted">
+        <p className="mt-3 line-clamp-3 text-sm text-muted">
           {blurb.fromAi ? <AiBlurbMark className="mr-1.5 align-middle" /> : null}
           {blurb.text}
         </p>
-        <div className="mt-3 flex flex-wrap items-center gap-2 text-xs text-muted">
+        <div className="mt-auto pt-4 flex flex-wrap items-center gap-2 text-xs text-muted">
           <span className="label">Template</span>
           {category ? <span className="label">{category}</span> : null}
           {tags.map((tag) => (

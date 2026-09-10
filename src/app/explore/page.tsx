@@ -4,6 +4,7 @@ import { TemplateBotCard } from "@/components/TemplateBotCard";
 import { listStoreBots, listTemplates } from "@/lib/api";
 import type { Metadata } from "next";
 import { pageMetadata } from "@/lib/seo";
+import { AdBanner } from "@/components/AdBanner";
 
 export const metadata: Metadata = pageMetadata({
   title: "Explore bots",
@@ -148,6 +149,10 @@ export default async function ExplorePage({ searchParams }: { searchParams: Sear
           ) : null}
         </div>
       ) : null}
+
+      <div className="pt-2">
+        <AdBanner position="inline" />
+      </div>
     </div>
   );
 }

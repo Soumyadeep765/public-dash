@@ -26,39 +26,27 @@ export function BotRepoHeader({
   return (
     <div className="space-y-3 border-b border-border pb-4">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-        <div className="flex min-w-0 items-start gap-3">
+        <div className="flex min-w-0 items-center gap-3">
           <BotPhoto
             photo={bot.photo}
             username={bot.bot_username}
             name={bot.name}
             className="h-8 w-8 rounded-md border border-border object-cover"
           />
-          <div className="min-w-0">
-            <h1 className="flex flex-wrap items-center gap-x-1 text-xl font-normal sm:text-2xl">
-              <Link href={`/${owner}`} className="text-accent hover:underline">
-                {owner}
-              </Link>
-              <span className="text-muted">/</span>
-              <Link href={repoPath} className="font-semibold text-fg hover:underline">
-                {handle}
-              </Link>
-              {bot.listing_type_label ? (
-                <span className="label ml-2">Public · {bot.listing_type_label}</span>
-              ) : (
-                <span className="label ml-2">Public</span>
-              )}
-            </h1>
-            <p className="mt-1 text-sm text-muted">
-              {blurb.fromAi ? <AiBlurbMark className="mr-1.5 align-middle" /> : null}
-              {blurb.text}
-            </p>
-            <AiCatalogMeta
-              category={bot.ai_category}
-              tags={bot.ai_tags}
-              className="mt-2"
-              maxTags={6}
-            />
-          </div>
+          <h1 className="flex flex-wrap items-center gap-x-1 text-xl font-normal sm:text-2xl">
+            <Link href={`/${owner}`} className="text-accent hover:underline">
+              {owner}
+            </Link>
+            <span className="text-muted">/</span>
+            <Link href={repoPath} className="font-semibold text-fg hover:underline">
+              {handle}
+            </Link>
+            {bot.listing_type_label ? (
+              <span className="label ml-2">Public · {bot.listing_type_label}</span>
+            ) : (
+              <span className="label ml-2">Public</span>
+            )}
+          </h1>
         </div>
 
         <div className="flex flex-wrap gap-2">
@@ -77,6 +65,19 @@ export function BotRepoHeader({
             <ExternalLink size={14} />
           </a>
         </div>
+      </div>
+
+      <div className="space-y-2">
+        <p className="text-sm text-muted">
+          {blurb.fromAi ? <AiBlurbMark className="mr-1.5 align-middle" /> : null}
+          {blurb.text}
+        </p>
+        <AiCatalogMeta
+          category={bot.ai_category}
+          tags={bot.ai_tags}
+          className="mt-2"
+          maxTags={6}
+        />
       </div>
 
       <div className="flex flex-wrap gap-4 text-sm text-muted">

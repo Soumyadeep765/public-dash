@@ -4,6 +4,7 @@ import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
 import { PendingForkRedirect } from "@/components/PendingForkRedirect";
 import { SessionProvider } from "@/components/SessionProvider";
+import { AdBanner } from "@/components/AdBanner";
 import { SiteJsonLd } from "@/components/SiteJsonLd";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import {
@@ -103,6 +104,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
             <PendingForkRedirect />
             <SiteJsonLd />
             <Header />
+            <AdBanner />
             <main className="flex-1 py-6">{children}</main>
             <Footer />
           </SessionProvider>

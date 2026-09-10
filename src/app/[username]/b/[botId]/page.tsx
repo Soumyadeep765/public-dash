@@ -9,6 +9,7 @@ import { AiCatalogCard } from "@/components/repo/AiCatalogCard";
 import { RelatedBots } from "@/components/repo/RelatedBots";
 import { ShareMenu } from "@/components/repo/ShareMenu";
 import { AiBlurbMark } from "@/components/AiBlurbMark";
+import { AdBanner } from "@/components/AdBanner";
 import { getRelatedPublicBots } from "@/lib/api";
 import { findRepoFile, flattenUnder } from "@/lib/files";
 import { getBotOgImageUrl } from "@/lib/botPhoto";
@@ -137,6 +138,8 @@ export default async function BotRepoByIdPage({ params }: { params: Params }) {
         </div>
         <ShareMenu pagePath={basePath} />
       </div>
+
+      <AdBanner position="inline" />
 
       <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_280px]">
         <div className="min-w-0 space-y-4">

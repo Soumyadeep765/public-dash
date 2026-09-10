@@ -5,6 +5,7 @@ import { BookOpen, Code2, FolderGit2, KeyRound, Sparkles } from "lucide-react";
 import { StoreBotCard } from "@/components/StoreBotCard";
 import { TemplateBotCard } from "@/components/TemplateBotCard";
 import { HomeSignedInBanner } from "@/components/HomeSignedIn";
+import { AdBanner } from "@/components/AdBanner";
 import { JsonLd } from "@/components/repo/JsonLd";
 import { TbhLogo } from "@/components/TbhLogo";
 import { listStoreBots, listTemplates } from "@/lib/api";
@@ -164,6 +165,8 @@ export default async function HomePage() {
           </div>
         </section>
       ) : null}
+
+      <AdBanner position="inline" />
 
       <section className="box flex flex-col items-start gap-3 p-5 sm:flex-row sm:items-center sm:justify-between">
         <div>

@@ -32,10 +32,10 @@ export function StoreBotCard({ bot }: { bot: StoreBot }) {
             <p className="truncate text-sm text-muted">@{username}</p>
           </div>
         </div>
-        <p className="mt-3 line-clamp-3 flex-1 text-sm text-muted">
+        <p className="mt-3 line-clamp-3 text-sm text-muted">
           {bot.description || "No description yet."}
         </p>
-        <div className="mt-3 flex flex-wrap items-center gap-2 text-xs text-muted">
+        <div className="mt-auto pt-4 flex flex-wrap items-center gap-2 text-xs text-muted">
           <span className="label">{bot.category || "General"}</span>
           {tags.map((tag) => (
             <span key={tag} className="label">
