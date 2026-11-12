@@ -21,3 +21,8 @@ const nextConfig: NextConfig = {
 };
 
 export default nextConfig;
+
+// Local `next dev` only. Production builds (Vercel and OpenNext) skip this.
+if (process.env.NODE_ENV === "development") {
+  void import("@opennextjs/cloudflare").then((mod) => mod.initOpenNextCloudflareForDev());
+}
